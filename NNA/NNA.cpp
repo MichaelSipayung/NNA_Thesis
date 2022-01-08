@@ -2,10 +2,13 @@
 #include <Eigen/dense>
 #include <random> 
 #include <algorithm>
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <math.h>
 #define NPOP 100
 #define MAX  100
-#define LB 0 
-#define UP 1.0
+#define LB -15 
+#define UP 30
 #define nvars 2
 double f(Eigen::Matrix<double, 1, nvars>);
 
@@ -107,7 +110,7 @@ int main()
 	w_target = w.col(int(value_index(0, 1)));
 	//return target_vector, target value, and weight matrix;. stop 
 
-	while (begin!=1)
+	while (begin!=MAX)
 	{
 		//step 6: generate new pattern and update solution... 
 		x_new		= w * x_pattern;
@@ -207,10 +210,39 @@ int main()
 			x_pattern.row(int(value_index2(0, 1))) = x_target;
 			w.col(int(value_index2(0, 1))) = w_target;
 		}
+		std::cout << target << std::endl;
 		++begin;
 	}
 	std::cout << "xtarge \t: " << x_target << std::endl;
 }
 double f(Eigen::Matrix<double, 1, nvars> x ){
-	return (x(0, 0) + x(0, 1));
+	int caseNum = 1;
+	//grewank 
+	double temp = 0;
+	double p = 1.0;
+	//ackley
+	int n = 2;
+	double a = 20.0, b = 0.2, c = 2.0 * M_PI;
+	double s1 = 0, s2 = 0;
+	switch (caseNum)
+	{
+	case 0:
+
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp += (std::pow(x(0, i), 2.0) / 4000.0);
+		}
+		for (size_t i = 1; i < nvars + 1; i++)
+		{
+			p *= std::cos(x(0, i - 1) / std::sqrt(i));
+		}
+		return (1.0 + temp - p);
+		break;
+	case 1: 
+		return (std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0));
+		break;
+	default:
+		break;
+	}
+
 }
