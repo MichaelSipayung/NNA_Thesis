@@ -20,6 +20,9 @@ int main()
 	Eigen::Matrix<double, NPOP, NPOP> w;
 	Eigen::Matrix<double, 1, NPOP-1> t;
 	Eigen::Matrix <double, 1, 2> value_index; 
+	Eigen::Matrix <double, 1, 2> value_index1;
+	Eigen::Matrix <double, 1, 2> value_index2;
+
 	Eigen::Matrix<double, 1, nvars> x_target;
 	Eigen::Matrix<double, NPOP, 1> w_target;
 	Eigen::Matrix<double, NPOP, nvars> x_new;
@@ -159,10 +162,54 @@ int main()
 						//equation 13, page 751
 					}
 			}
-			//step
+			//return x_pattern, which is satisfy the restriction. stop 
+		}
+		//step 10: calculate the objective function 
+		for (size_t q = 0; q < NPOP; q++)
+		{
+			cost(q, 0) = f(x_pattern.row(q));
+		}
+		//return all cost. stop 
+
+		//step 12: update beta, equation 11
+		beta *= 0.99;
+		if (beta<0.01)
+		{
+			beta = 0.05;
+		}
+		//return new beta. stop 
+		//step 11: update the target solution 
+		//find minimum cost
+		for (size_t r = 0; r < NPOP; r++)
+		{
+			if (cost(r,0)==cost.minCoeff()) {
+				value_index1(0, 0) = cost(r, 0);
+				value_index1(0, 1) = r;
+				break;
+			}
+		}
+		//find max cost
+		for (size_t s = 0; s < NPOP; s++) 
+		{
+			if (cost(s, 0) == cost.maxCoeff()) {
+				value_index2(0, 0) = cost(s, 0);
+				value_index2(0, 1) = s;
+				break;
+			}
+		}
+		if (value_index1(0,0)<target )
+		{
+			target = value_index1(0, 0);
+			x_target = x_pattern.row(int(value_index1(0, 1)));
+			w_target = w.col(int(value_index1(0, 1)));
+		}
+		else {
+			x_pattern.row(int(value_index2(0, 1))) = x_target;
+			w.col(int(value_index2(0, 1))) = w_target;
 		}
 		++begin;
 	}
+	std::cout << "xtarge \t: " << x_target << std::endl;
 }
 double f(Eigen::Matrix<double, 1, nvars> x ){
 	return (x(0, 0) + x(0, 1));
