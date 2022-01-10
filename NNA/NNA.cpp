@@ -2,13 +2,14 @@
 #include <Eigen/dense>
 #include <random> 
 #include <algorithm>
+#include "AnnImp.cpp"
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <math.h>
 #define NPOP 100
-#define MAX  100
-#define LB -15 
-#define UP 30
+#define MAX  150
+#define LB 0 
+#define UP 10
 #define nvars 2
 double f(Eigen::Matrix<double, 1, nvars>);
 
@@ -174,13 +175,6 @@ int main()
 		}
 		//return all cost. stop 
 
-		//step 12: update beta, equation 11
-		beta *= 0.99;
-		if (beta<0.01)
-		{
-			beta = 0.05;
-		}
-		//return new beta. stop 
 		//step 11: update the target solution 
 		//find minimum cost
 		for (size_t r = 0; r < NPOP; r++)
@@ -191,6 +185,7 @@ int main()
 				break;
 			}
 		}
+
 		//find max cost
 		for (size_t s = 0; s < NPOP; s++) 
 		{
@@ -210,24 +205,33 @@ int main()
 			x_pattern.row(int(value_index2(0, 1))) = x_target;
 			w.col(int(value_index2(0, 1))) = w_target;
 		}
+		//step 12: update beta, equation 11
+		beta *= 0.99;
+		if (beta < 0.01)
+		{
+			beta = 0.05;
+		}
 		std::cout << target << std::endl;
+
+		//return new beta. stop 
 		++begin;
 	}
+	std::cout << target << std::endl;
 	std::cout << "xtarge \t: " << x_target << std::endl;
 }
 double f(Eigen::Matrix<double, 1, nvars> x ){
-	int caseNum = 1;
-	//grewank 
+	double PENALTY = std::pow(10, 15.0);
+	int caseNum =12;
+	double c[NPOP];
+	double sumConstrains = 0.0;
 	double temp = 0;
 	double p = 1.0;
-	//ackley
 	int n = 2;
-	double a = 20.0, b = 0.2, c = 2.0 * M_PI;
-	double s1 = 0, s2 = 0;
+
 	switch (caseNum)
 	{
 	case 0:
-
+		//griewank function 
 		for (size_t i = 0; i < nvars; i++)
 		{
 			temp += (std::pow(x(0, i), 2.0) / 4000.0);
@@ -239,10 +243,122 @@ double f(Eigen::Matrix<double, 1, nvars> x ){
 		return (1.0 + temp - p);
 		break;
 	case 1: 
-		return (std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0));
+		//sphere
+		temp = 0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp += std::pow(x(0, i), 2.0);
+		}
+		return temp;
+		break;
+	case 2:
+		//cube  function 
+		temp = 0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp += -std::pow(x(0, i), 3.0);
+		}
+		return temp;
+		break;
+	case 3:
+		//Michalewicz function 
+		temp = 0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp += std::sin(x(0, i)) * std::pow( (std::sin(i+1 * std::pow(x(0, i), 2.0)/M_PI)), 2.0*10.0);
+		}
+		return -temp;
+		break;
+	case 4:
+		//sum square
+		temp = 0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp = temp+(i + 1) * std::pow(x(0, i), 2.0);
+		}
+		return temp;
+		break;
+	case 5:
+		//rosenbrock function
+		temp = 0.0;
+		for (size_t i = 1; i < nvars; i++)
+		{
+			temp = temp + 100.0 * (std::pow(x(0, i ) - std::pow(x(0, i-1), 2.0), 2.0)) +std::pow(1.0-x(0,i-1),2.0);
+		}
+		return temp;
+		break;
+	case 6:
+		//rastrign function
+		temp = 0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp = temp + (std::pow(x(0, i), 2.0) - 10.0 * std::cos(2.0 * M_PI * x(0, i)));
+		}
+		return 10.0*nvars+temp;
+		break;
+	case 7:
+		//hump function
+		temp = 1.0316285 + 4 * std::pow(x(0,0),2.0) - 
+			2.1 * std::pow(x(0,0),4.0) + std::pow(x(0,0),6.0) / 3 + x(0,0) * x(0,1) - 4 * std::pow(x(0,1), 2.0) + 4 * std::pow(x(0,1),4.0);
+		return temp;
+		break;
+	case 8:
+		//SCHWEFEL function
+		temp = 0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp += x(0, i) * std::sin(std::sqrt(std::fabs(x(0, i))));
+		}
+		return (418.9829 * nvars - temp);
+		break;
+	//constrained optimization 
+	case 9:
+		//page 414. stewart calculus : 1.86903e-06 -1.86778e-06
+		temp = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1), 2.0);
+		sumConstrains = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 1.0;
+		return (temp + PENALTY * std::pow(std::max(sumConstrains,0.0),2.0));
+		break ;
+	case 10:
+		//page 417. stewart calculus, question no 19 : 0.707822 0.353192
+		temp = std::exp(-x(0, 0) * x(0, 1));
+		sumConstrains = std::pow(x(0, 0), 2.0) + 4.0*std::pow(x(0, 1), 2.0) - 1.0;
+		return (temp + PENALTY  * std::pow(std::max(sumConstrains, 0.0), 2.0));
+		break;
+	case 11:
+		//simple square case : 1.95418 0.0885032, page 425
+		temp = (1 / 2.0) * std::pow(x(0, 0) - 2.0, 2.0) + (1/2.0)*std::pow(x(0, 1) - 1 / 2.0, 2.0);
+		sumConstrains = -std::pow(x(0, 0) + 1.0, -1.0) + x(0, 1) + (1 / 4.0);
+		return (temp + PENALTY * std::pow(std::max(sumConstrains, 0.0), 2.0));
+		break;
+	case 12:
+		//page 475, jorge nocedal  : 1.38838 1.69419
+		temp = std::pow(x(0, 0) - 1.0, 2.0) + std::pow(x(0, 1) - 2.5, 2.0);
+		c[0] = -x(0, 0) + 2.0 * x(0, 1) - 2.0;
+		c[1] = x(0, 0) + 2.0 * x(0, 1) - 6.0;
+		c[2] = x(0, 0) - 2.0 * x(0, 1) - 2.0;
+		c[3] = 0.0;
+		for (size_t i = 0; i < 3; i++)
+		{
+			c[3] += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (temp + c[3]);
+		break;
+	case 13:
+		// jorge nocedal page 322 : 0.999732 0.000265118, 
+		temp = std::pow(x(0, 0) - 3 / 2.0, 2.0) + std::pow(x(0, 1) - 1 / 2.0, 4.0);
+		c[0] = -1.0 + x(0, 0) + x(0, 1);
+		c[1] = -1.0 + x(0, 0) - x(0, 1);
+		c[2] = -1.0 - x(0, 0) + x(0, 1);
+		c[3] = -1.0 - x(0, 0) - x(0, 1);
+		c[4] = 0.0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			c[4] += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (temp + c[4]);
 		break;
 	default:
 		break;
 	}
-
+	return 0;
 }

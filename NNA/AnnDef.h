@@ -1,23 +1,24 @@
 #pragma once
 #ifndef ANN_HEADER
 #define ANN_HEADER
+#include <iostream>
 #include <Eigen/dense>
-#define LB 12.0
-#define UB 15.0
-#define NVARS 2
+#include <random> 
+#include <algorithm>
 #define NPOP 100
-#define MAX_ITER 1000
+#define MAX  150
+#define LB 0 
+#define UP 10
+#define nvars 2
 namespace NNA {
-	static double f(Eigen::RowVector2d);
-	static void initialization(Eigen::RowVectorXd &,Eigen::RowVectorXd &, Eigen::MatrixXd&,Eigen::RowVectorXd&);
-	static void createRandom(Eigen::Matrix<double, 1, 100>  , Eigen::Matrix<double, 100, 100>);
-	static void constrainsSummation();
-	static void bestSolution();
-	static void transferOperator();
-	static void biasReduction();
-	static void biasForWeight();
-	static void updateWeight();
-	static Eigen::RowVector2d mainNNA();
-}
-#endif 
-
+	static double f(Eigen::Matrix<double, 1, nvars>);
+	static void initialization(Eigen::Matrix<double, 1, NPOP>&ww, Eigen::Matrix<double, NPOP, NPOP>&w,
+		Eigen::Matrix<double, NPOP, nvars> &x_pattern, Eigen::Matrix<double, NPOP, 1> &cost);
+	static void CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& cost,
+		Eigen::Matrix <double, 1, 2> &value_index);
+	static void generateWeight(Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, 1, NPOP - 1>& t);
+	static void setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<double, NPOP, nvars>& x_pattern,
+		Eigen::Matrix <double, 1, 2>& value_index, Eigen::Matrix<double, NPOP, 1>& w_target, Eigen::Matrix<double, NPOP, NPOP>& w);
+	static void Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
+		Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars> &x_target);
+#endif
