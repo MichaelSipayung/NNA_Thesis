@@ -43,6 +43,10 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double p = 1.0;
 	int n = 2;
 	double sum = 0.0;
+
+	//beam design 
+	double P = 6000, L = 14, E = 30e+6, G = 12e+6,
+	t_max = 13600, s_max = 30000, d_max = 0.25,M,R,J,P_c,t1,t,s,d,t2;
 	//note max transform by pre mul-multiplying the objective function by -1
 	switch (caseNum)
 	{
@@ -288,6 +292,80 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
  		break;
+	case 24:
+		//i-beam design problem 
+		temp = 5000 / ( (x(0, 2) * std::pow(x(0, 1) - 2.0 * x(0, 3), 3.0) / 12.0) + (x(0,0) *std::pow(x(0,3),3.0)/6.0) +
+			(2.0 *x(0,0)*x(0,3)) * (std::pow((x(0,1) -x(0,3))/2.0,2.0)));
+		c[0] = 2.0 * x(0, 0) * x(0, 2) + x(0, 2) * (x(0, 1) - 2.0 * x(0, 3));
+		
+		c[1] = 10.0 - x(0, 0);
+		c[2] = x(0, 0) - 50.0;
+
+		c[3] = 10.0 - x(0, 1);
+		c[4] = x(0, 1) - 99.0;
+
+		c[5] = 0.9 - x(0, 2);
+		c[6] = x(0, 2) - 5.0;
+
+		c[5] = 0.9 - x(0, 3);
+		c[6] = x(0, 3) - 5.0;
+		for (size_t i = 0; i <= 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
+	case 25:
+		//weldead beam design 
+		temp = 1.10471 * std::pow(x(0, 0), 2.0) * x(0, 1) + 0.04811 * x(0, 2) * x(0, 3) * (14 + x(0, 1));
+		M = P * (L + x(0, 1) / 2.0);
+		R = std::sqrt(0.25 * (x(0, 1) * x(0, 1) + (x(0, 0) + std::pow(x(0, 2), 2.0))) );
+		J = 2 * (std::sqrt(2) * x(0, 0) * x(0, 1) * (x(0, 1) * x(0, 1) / 12 + 0.25 * (x(0, 0) + x(0, 2) * x(0, 2))) );
+		P_c = (4.013 * E / (6 * L * L)) * x(0, 2) * x(0, 3) * x(0, 3) * (1 - 0.25 * x(0, 2) * std::sqrt(E / G) / L);
+		t1 = P / (std::sqrt(2) * x(0, 0) * x(0, 1)); 
+		t2 = M * R / J;
+		t = std::sqrt(t1 * t1 + t1 * t2 * x(0,1) / R + t2 * t2);
+		s = 6 * P * L / (x(0, 3) * x(0, 2) * x(0, 2));
+		d = 4 * P * std::pow(L,3.0) / (E * x(0,3) * std::pow(x(0,2),3.0));
+		c[0] = t - t_max;
+		c[1] = s - s_max;;
+		c[2] = x(0,0) - x(0,3);
+		c[3] = 0.10471 * std::pow(x(0,0),2.0) + 0.04811 * x(0,2) * x(0,3) * (14.0 + x(0,1)) - 5.0;
+		c[4] = 0.125 - x(0, 0);
+		c[5] = d - d_max;
+		c[6] = P - P_c;
+		for (size_t i = 0; i <= 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
+	case 26:
+		//speed reducer design 
+		temp = 0.7854 * x(0, 0) * std::pow(x(0, 1), 2.0) *
+			(3.3333*std::pow(x(0,2),2.0)+14.9334*x(0,2)-43.0934)  - 
+			1.508*x(0,0) *(std::pow(x(0,5),2.0)+std::pow(x(0,6),2.0))
+			+ 7.4777*(std::pow(x(0,5),3.0) + std::pow(x(0, 6), 3.0)) + 
+			0.7854*(x(0,3) *std::pow(x(0,5),2.0) + x(0,4)* std::pow(x(0,6),2.0));
+		c[0] = (	27.0  / (x(0, 0) * std::pow(x(0, 1), 2.0) * x(0, 2))) -1.0;
+		c[1] = (	397.5 / (x(0, 0) * std::pow(x(0, 1), 2.0) * std::pow(x(0, 2),2.0) )) - 1.0;
+		c[2] = (	1.93*std::pow(x(0,3),4.0) / (x(0, 1) * std::pow(x(0, 5), 4.0) * x(0, 2))) - 1.0;
+		c[3] = (	1.93 * std::pow(x(0, 4), 3.0) / (x(0, 1) * std::pow(x(0, 6), 4.0) * x(0, 2))) - 1.0;
+		
+		c[4] = 1.0 / 110 * std::pow(x(0, 5), 3.0)  * std::sqrt(	std::pow(745*x(0,3)/x(0,1)*x(0,2),2.0)+16.9*1e6	)-1.0;
+		c[5] = 1.0 / 85.0 * std::pow(x(0, 6), 3.0) * std::sqrt(std::pow(745 * x(0, 4) / x(0, 1) * x(0, 2), 2.0) +
+		157.5*1e6)-1.0;
+		c[6] = (x(0, 1) * x(0, 2) / 40.0) - 1.0;
+		c[7] = (x(0, 0) / 12.0 * x(0, 1)) - 1.0;
+		c[8] = (5.0 * x(0, 1) / x(0, 0)) - 1.0;
+		c[9] = ((1.5 * x(0, 5) + 1.9) / x(0, 3)) - 1.0;
+		c[10] = ((1.1 * x(0, 6) + 1.9) / x(0, 4)) - 1.0;
+		for (size_t i = 0; i <= 10; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
 	default:
 		break;
 	}
