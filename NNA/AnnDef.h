@@ -7,8 +7,8 @@
 #include "AnnImp.cpp"
 #define NPOP 100
 #define MAX  150
-#define LB 0 
-#define UP 10
+#define LB 0.0 
+#define UP 10.0
 #define nvars 2
 
 namespace NNA {

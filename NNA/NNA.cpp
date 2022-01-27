@@ -6,23 +6,19 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <math.h>
-int begin = 0;
-int n_rotate = 0, n_wrotate = 0;
-double target = 0.0;
-double beta = 1.0;
-constexpr int FLOAT_MIN = 0;
-constexpr int FLOAT_MAX = 1;
-std::random_device rd;
+int n_rotate = 0, n_wrotate = 0, begin = 0;
+double target = 0.0, beta = 1.0;
+constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
+std::random_device rd; //nondeterminioctic random distribution
 std::default_random_engine eng(rd());
-std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);
-std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1);
-Eigen::Matrix <double, 1, 2> value_index1;
-Eigen::Matrix <double, 1, 2> value_index2;
+std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);//random number between 1 and 0
+std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1);//table 1
+Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 
 int main()
 {
 
-	Eigen::Matrix<double, NPOP, 1> x_lb, x_ub, cost;
+	Eigen::Matrix<double, NPOP, 1>  cost;
 	Eigen::Matrix<double, NPOP, nvars> x_pattern, x_new;
 	Eigen::Matrix<double, 1, NPOP> ww;
 	Eigen::Matrix<double, NPOP, NPOP> w;
@@ -31,22 +27,22 @@ int main()
 	Eigen::Matrix<double, 1, nvars> x_target;
 	Eigen::Matrix<double, NPOP, 1> w_target;
 	//call NNA
-	NNA::initialization(ww,w,x_pattern,cost);
+	NNA::initialization(ww, w, x_pattern, cost);
 	NNA::CreateInitialPopulation(x_pattern, cost,value_index);
 	NNA::generateWeight(w, t);
 	NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
 	NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
-	NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
+	NNA::Run(x_new, x_pattern, w_target, w, cost, x_target); 
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
-	int caseNum = 12;
+	int caseNum = 20;
 	double c[NPOP];
 	double sumConstrains = 0.0;
 	double temp = 0;
 	double p = 1.0;
 	int n = 2;
-
+	//note max transform by pre mul-multiplying the objective function by -1
 	switch (caseNum)
 	{
 	case 0:
@@ -118,7 +114,8 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	case 7:
 		//hump function
 		temp = 1.0316285 + 4 * std::pow(x(0, 0), 2.0) -
-			2.1 * std::pow(x(0, 0), 4.0) + std::pow(x(0, 0), 6.0) / 3 + x(0, 0) * x(0, 1) - 4 * std::pow(x(0, 1), 2.0) + 4 * std::pow(x(0, 1), 4.0);
+			2.1 * std::pow(x(0, 0), 4.0) + std::pow(x(0, 0), 6.0) / 3 + x(0, 0) * x(0, 1) 
+			- 4 * std::pow(x(0, 1), 2.0) + 4 * std::pow(x(0, 1), 4.0);
 		return temp;
 		break;
 	case 8:
@@ -176,6 +173,55 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + c[4]);
 		break;
+	case 14:
+		//simple square case : 1.95418 0.0885032, page 425
+		temp = (2.0 * std::sqrt(2.0)*x(0,0) + x(0, 1)) * 100.0;
+		c[0]=(std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1)) * 2.0 - 2.0;
+		c[1] = (x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1)) * 2.0 - 2.0;
+		c[2] = (1.0) / (x(0, 0) + std::sqrt(2.0)* x(0, 1)) * 2.0 - 2.0;
+		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) 
+			+ PENALTY * std::pow(std::max(c[2], 0.0), 2.0));
+		break;
+	case 15://max paper zahara  
+		temp = -std::pow(std::sin(2.0 * M_PI * x(0, 0)), 3.0) * 
+			std::sin(2.0 * M_PI * x(0, 1))/ -(std::pow(x(0,0),3.0) * (x(0,0)+x(0,1)));
+		c[0] = std::pow(x(0, 0), 2.0) - x(0, 1) + 1.0;
+		c[1] = 1.0 - x(0, 0) + std::pow(x(0, 1) - 4.0, 2.0);
+		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
+		break;
+	case 16:
+		return (-x(0, 0) - x(0, 1));
+		break;
+		//nonlinear integer programming 
+	case 17:
+		return  std::pow(x(0, 0), 4.0) + std::pow(x(0, 1), 4.0) + 
+			16.0 * (x(0, 0) * x(0, 1) + std::pow(4.0 + x(0, 1), 2.0));
+		break;
+	case 18: 
+		temp= 10.0 / x(0, 0) + 10.0 / x(0, 1) + 20.0 / x(0, 2) + 30.0 / x(0, 3);
+		c[0] = x(0, 0) + x(0, 1) + x(0, 2) + x(0, 3) - 10.0;
+		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0));
+		break;
+		//mixed nollinear integer programming 
+	case 19:
+		temp = -0.7 * x(0, 2) + 5.0 * std::pow((x(0, 0) - 0.5), 2.0) + 0.8;
+		c[0] = -std::exp(x(0, 0) - 0.2) - x(0, 1);
+		c[1] = x(0, 1) + 1.1*x(0, 2) - 1.0;
+		c[2] = x(0, 0) - 1.2 * x(0, 2) - 0.2;
+		c[3] = 0.2 - x(0, 0);
+		c[4] = x(0, 0) - 1.0;
+		c[5] = -2.2554 - x(0, 1);
+		c[6] = x(0, 1) + 1.0;
+		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) 
+			+ PENALTY * std::pow(std::max(c[2], 0.0), 2.0) + PENALTY * std::pow(std::max(c[3], 0.0), 2.0)
+			+ PENALTY * std::pow(std::max(c[4], 0.0), 2.0) + PENALTY * std::pow(std::max(c[5], 0.0), 2.0)
+			+ PENALTY * std::pow(std::max(c[6], 0.0), 2.0));
+		break;
+	case 20:
+		temp = -17 * x(0, 0) - 12.0 * x(0, 1);
+		c[0] = 10 * x(0, 0) + 7.0 * x(0, 1) - 40.0;
+		c[1] = x(0, 0) + x(0, 1) - 5.0;
+		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
 	default:
 		break;
 	}
@@ -200,7 +246,7 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 	}
 	for (size_t i = 0; i < cost.rows(); i++)
 	{
-		if (cost(i, 0) == cost.minCoeff()) {
+		if (cost(i, 0) == cost.minCoeff()) { //min
 			value_index(0, 0) = cost(i, 0);
 			value_index(0, 1) = i;
 			break;
@@ -294,11 +340,39 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 				{
 					x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
 					//equation 13, page 751
+					//add auxilary makro for mixed integer problem. test case problem 19
+					/*if (p == 0 || p == 1)//position of the integer problem. for 
+					{
+						x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (std::round(x_target(0, p)) - x_pattern(i, p));
+					}*/
 				}
 			}
 			//return x_pattern, which is satisfy the restriction. stop 
 		}
 		//step 10: calculate the objective function 
+		//before calculate, consider the lower and upper bound
+		for (size_t x_max = 0; x_max < NPOP; x_max++)
+		{
+			for (size_t y_max = 0; y_max < nvars; y_max++)
+			{
+				if (x_pattern(x_max,y_max)< LB)
+				{
+					x_pattern(x_max, y_max) = LB;
+				}
+			}
+		}
+
+		for (size_t x_min = 0; x_min < NPOP; x_min++)
+		{
+			for (size_t y_min = 0; y_min < nvars; y_min++)
+			{
+				if (x_pattern(x_min, y_min) > UP)
+				{
+					x_pattern(x_min, y_min) = UP;
+				}
+			}
+		}
+		//when calculate the cost, we already assume that all value not outside the lower and upper bound
 		for (size_t q = 0; q < NPOP; q++)
 		{
 			cost(q, 0) = NNA::f(x_pattern.row(q));
@@ -309,7 +383,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//find minimum cost
 		for (size_t r = 0; r < NPOP; r++)
 		{
-			if (cost(r, 0) == cost.minCoeff()) {
+			if (cost(r, 0) == cost.minCoeff()) {//min coeff- transform the proble to max
 				value_index1(0, 0) = cost(r, 0);
 				value_index1(0, 1) = r;
 				break;
@@ -319,7 +393,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//find max cost
 		for (size_t s = 0; s < NPOP; s++)
 		{
-			if (cost(s, 0) == cost.maxCoeff()) {
+			if (cost(s, 0) == cost.maxCoeff()) {//max coeff.- transform the proble to max
 				value_index2(0, 0) = cost(s, 0);
 				value_index2(0, 1) = s;
 				break;
@@ -347,5 +421,5 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		++begin;
 	}
 	std::cout << target << std::endl;
-	std::cout << "xtarge \t: " << x_target << std::endl;
+	std::cout << "xtarge \t: " <<x_target << std::endl;
 }
