@@ -42,6 +42,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double temp = 0;
 	double p = 1.0;
 	int n = 2;
+	double sum = 0.0;
 	//note max transform by pre mul-multiplying the objective function by -1
 	switch (caseNum)
 	{
@@ -222,6 +223,71 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		c[0] = 10 * x(0, 0) + 7.0 * x(0, 1) - 40.0;
 		c[1] = x(0, 0) + x(0, 1) - 5.0;
 		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
+		//enginering problem 
+	case 21:
+		//tension/ compression spring design problem 
+		temp = std::pow(x(0, 0), 2.0) * x(0, 1) * x(0, 2) 
+			+ 2.0 * std::pow(x(0, 0), 2.0)*x(0,1);
+		c[0] = 1.0 - 
+			(std::pow(x(0, 1), 3.0) * x(0, 2) / 71785.0 * std::pow(x(0, 0), 4.0));
+		c[1] = (4.0 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1))/(12566*(x(0,1)*std::pow(x(0,0),3.0) )) + 
+			1.0/5180.0*std::pow(x(0,0),2.0);
+		c[2] = 1.0 - (140.45 * x(0, 0) / std::pow(x(0, 1), 3.0) * x(0, 2));
+		c[3] = ((x(0, 0) + x(0, 1)) / 1.5)-1.0;
+		
+		c[4] = 0.05 - x(0, 0);
+		c[5] = x(0, 0) - 2.0;
+
+		c[6] = 0.25- x(0, 1);
+		c[7] = x(0,1)-1.30;
+
+		c[8] = 2.00-x(0,2);
+		c[9] = x(0,2)-15.0;
+
+		for (size_t i = 0; i <= 9; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
+	case 22:
+		//pressure vessel design 
+		temp = 0.6224 * x(0, 0) * x(0, 2) * x(0, 3) + 1.7781*std::pow(x(0,2),2.0)*x(0,1)+
+			3.1661*std::pow(x(0,0),2.0)*x(0,3)+ 19.84*std::pow(x(0,1),2.0)*x(0,3);
+		c[0] = -x(0, 0) + 0.0193 * x(0, 2);
+		c[1] = -x(0, 1) + 0.00945 * x(0, 2);
+		c[2] = -M_PI * x(0, 3) * std::pow(x(0, 2), 2.0) - (4.0 / 3.0) * M_PI * std::pow(x(0, 2), 3.0) + 1296000;
+		c[3] = x(0, 3) - 240.0;
+
+		c[4] = 0.0 - x(0, 0);
+		c[5] = x(0, 0) - 99.0;
+
+		c[6] = 0.0 - x(0, 1);
+		c[7] = x(0, 1) - 99.0;
+
+		c[8] = 10.0 - x(0, 2);
+		c[9] = x(0, 2) - 200.0;
+
+		c[10] = 10.0 - x(0, 3);
+		c[11] = x(0, 3) - 200.0;
+		for (size_t i = 0; i <= 11; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
+	case 23:
+		//three-bar truss design 
+		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
+		c[0] = ( (std::sqrt(2.0) * x(0, 0) + x(0, 1)) /(std::sqrt(2.0) * std::pow(x(0, 0),2.0) +2.0*x(0,0)*x(0,1)) )*2.0-2.0;
+		c[1] = (( x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
+		c[2] = (1.0 / (std::sqrt(2.0) * x(0, 1) + x(0, 0)));
+		for (size_t i = 0; i <= 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+ 		break;
 	default:
 		break;
 	}
