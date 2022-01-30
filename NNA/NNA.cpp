@@ -6,7 +6,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <math.h>
-int n_rotate = 0, n_wrotate = 0, begin = 0;
+#include <fstream>
+int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
 std::random_device rd; //nondeterminioctic random distribution
@@ -27,16 +28,20 @@ int main()
 	Eigen::Matrix<double, 1, nvars> x_target;
 	Eigen::Matrix<double, NPOP, 1> w_target;
 	//call NNA
-	NNA::initialization(ww, w, x_pattern, cost);
-	NNA::CreateInitialPopulation(x_pattern, cost,value_index);
-	NNA::generateWeight(w, t);
-	NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
-	NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
-	NNA::Run(x_new, x_pattern, w_target, w, cost, x_target); 
+	for (size_t i = 0; i < 1; i++)
+	{
+		NNA::initialization(ww, w, x_pattern, cost);
+		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
+		NNA::generateWeight(w, t);
+		NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
+		NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
+		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
+	}
+	std::cout << "finish" << std::endl;
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
-	int caseNum = 20;
+	int caseNum = 21;
 	double c[NPOP];
 	double sumConstrains = 0.0;
 	double temp = 0;
@@ -234,25 +239,26 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			+ 2.0 * std::pow(x(0, 0), 2.0)*x(0,1);
 		c[0] = 1.0 - 
 			(std::pow(x(0, 1), 3.0) * x(0, 2) / 71785.0 * std::pow(x(0, 0), 4.0));
-		c[1] = (4.0 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1))/(12566*(x(0,1)*std::pow(x(0,0),3.0) )) + 
-			1.0/5180.0*std::pow(x(0,0),2.0);
+		c[1] = (4.0 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1))/
+			(12566.0*(x(0,1)*std::pow(x(0,0),3.0)-std::pow(x(0,0),4.0) )) + 
+			(1.0/5180.0*std::pow(x(0,0),2.0));
 		c[2] = 1.0 - (140.45 * x(0, 0) / std::pow(x(0, 1), 3.0) * x(0, 2));
 		c[3] = ((x(0, 0) + x(0, 1)) / 1.5)-1.0;
 		
-		c[4] = 0.05 - x(0, 0);
+		/*c[4] = 0.05 - x(0, 0);
 		c[5] = x(0, 0) - 2.0;
 
 		c[6] = 0.25- x(0, 1);
 		c[7] = x(0,1)-1.30;
 
 		c[8] = 2.00-x(0,2);
-		c[9] = x(0,2)-15.0;
+		c[9] = x(0,2)-15.0;*/
 
-		for (size_t i = 0; i <= 9; i++)
+		for (size_t i = 0; i <= 3; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
-		return temp + sum;
+		return (temp + sum);
 		break;
 	case 22:
 		//pressure vessel design 
@@ -285,7 +291,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
 		c[0] = ( (std::sqrt(2.0) * x(0, 0) + x(0, 1)) /(std::sqrt(2.0) * std::pow(x(0, 0),2.0) +2.0*x(0,0)*x(0,1)) )*2.0-2.0;
 		c[1] = (( x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
-		c[2] = (1.0 / (std::sqrt(2.0) * x(0, 1) + x(0, 0)));
+		c[2] = (1.0 / (std::sqrt(2.0) * x(0, 1) + x(0, 0))) * 2.0 - 2.0;
 		for (size_t i = 0; i <= 2; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
@@ -366,6 +372,16 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
+	//multiobjective optimization 
+	case 27:
+		c[0] = std::pow(x(0, 0),2.0);
+		c[1] = std::pow(x(0, 0) - 2.0, 2.0);
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += 0.5 * c[i];
+		}
+		return sum;
+		break;
 	default:
 		break;
 	}
@@ -431,7 +447,11 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 }
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
-	while (begin != MAX)
+	std::ofstream writeF;
+	auto Maximum = 151;
+	int begin = 1;
+	writeF.open("tension.csv", std::ios::app);
+	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
 		x_new = w * x_pattern;
@@ -559,11 +579,21 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		{
 			beta = 0.05;
 		}
-		std::cout << target << std::endl;
+		//std::cout << target << std::endl;
 
 		//return new beta. stop 
+		writeF << begin<< "\t;";
+		for (size_t i = 0; i < nvars; i++)
+		{
+			writeF << x_target(0,i) << "\t;";
+
+		}
+		writeF << target << std::endl;
 		++begin;
 	}
-	std::cout << target << std::endl;
-	std::cout << "xtarge \t: " <<x_target << std::endl;
+	writeF << std::endl;
+	writeF.close();
+
+	//std::cout << target << std::endl;
+	//std::cout << "xtarge \t: " <<x_target << std::endl;
 }

@@ -6,10 +6,10 @@
 #include <algorithm>
 #include "AnnImp.cpp"
 #define NPOP 100
-#define MAX  150
-#define LB 0.0 
-#define UP 10.0
-#define nvars 2
+#define MAX  140
+#define LB 0.05 
+#define UP 15.0
+#define nvars 3
 
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
