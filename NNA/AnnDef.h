@@ -7,9 +7,12 @@
 #include "AnnImp.cpp"
 #define NPOP 100
 #define MAX  140
-#define LB 0.05 
-#define UP 15.0
-#define nvars 3
+//float L1 = 0.05, U1 = 0.20, L2 = 0.25, U2 = 1.3, L3 = 10.00, U3 = 12.00;//tension
+//float L1 = 0.0, U1 = 99.0, L2 = 0.0, U2 = 99.0, L3 = 10.00, U3 = 100.0, L4 = 10.00, U4 = 100.0; //pressure vessel
+//float L1 = 47.0, U1 = 51.0, L2 = 75.0, U2 = 85.0, L3 = 0.99, U3 = 5.0, L4 = 0.99, U4 = 5.0;//i-beam 
+float L1 = 0.1, U1 = 2.0, L2 = 0.1, U2 = 10.0, L3, U3, L4, U4;//i-beam 
+
+#define nvars 4
 
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);

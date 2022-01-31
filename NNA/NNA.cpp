@@ -12,7 +12,8 @@ double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
 std::random_device rd; //nondeterminioctic random distribution
 std::default_random_engine eng(rd());
-std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);//random number between 1 and 0
+std::uniform_real_distribution<float> 
+distr(FLOAT_MIN, FLOAT_MAX), distr1(L1, U1), distr2(L2, U2), distr3(L3, U3), distr4(L4, U4);//random number between 1 and 0
 std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1);//table 1
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 
@@ -28,7 +29,7 @@ int main()
 	Eigen::Matrix<double, 1, nvars> x_target;
 	Eigen::Matrix<double, NPOP, 1> w_target;
 	//call NNA
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < 20; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -41,7 +42,7 @@ int main()
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
-	int caseNum = 21;
+	int caseNum = 25;
 	double c[NPOP];
 	double sumConstrains = 0.0;
 	double temp = 0;
@@ -232,27 +233,26 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		c[0] = 10 * x(0, 0) + 7.0 * x(0, 1) - 40.0;
 		c[1] = x(0, 0) + x(0, 1) - 5.0;
 		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
+		break;
 		//enginering problem 
 	case 21:
 		//tension/ compression spring design problem 
-		temp = std::pow(x(0, 0), 2.0) * x(0, 1) * x(0, 2) 
-			+ 2.0 * std::pow(x(0, 0), 2.0)*x(0,1);
-		c[0] = 1.0 - 
-			(std::pow(x(0, 1), 3.0) * x(0, 2) / 71785.0 * std::pow(x(0, 0), 4.0));
-		c[1] = (4.0 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1))/
-			(12566.0*(x(0,1)*std::pow(x(0,0),3.0)-std::pow(x(0,0),4.0) )) + 
-			(1.0/5180.0*std::pow(x(0,0),2.0));
-		c[2] = 1.0 - (140.45 * x(0, 0) / std::pow(x(0, 1), 3.0) * x(0, 2));
-		c[3] = ((x(0, 0) + x(0, 1)) / 1.5)-1.0;
+		temp = (x(0, 2) + 2.0) * x(0, 1) * std::pow(x(0, 0), 2.0);
+		sum = 0.0;
+		c[4] = 71785.0 * std::pow(x(0, 0), 4.0);
+		c[5] = std::pow(x(0, 1), 3.0) * x(0, 2);
+		c[6] = 4.0 * std::pow(x(0, 1), 2.0) - x(0, 0)*x(0,1);
+		c[7] = 12566.0 * (x(0, 1) * std::pow(x(0, 0), 3.0) - std::pow(x(0, 0), 4.0));
+		c[8] = (1.0 / 5108.0 * std::pow(x(0, 0), 2.0));
+		c[9] = x(0, 0) + x(0, 1);
+		c[10] = 140.45 * x(0, 0);
+		c[11] = std::pow(x(0, 1), 2.0) * x(0, 2);
+
+		c[0] = 1.0 - (c[5] / c[4]);
+		c[1] = ( c[6]/c[7]) + c[8] -(1.0);
+		c[2] = 1.0 - ( c[10]/c[11]);
+		c[3] = (c[9] / 1.5)-1.0;
 		
-		/*c[4] = 0.05 - x(0, 0);
-		c[5] = x(0, 0) - 2.0;
-
-		c[6] = 0.25- x(0, 1);
-		c[7] = x(0,1)-1.30;
-
-		c[8] = 2.00-x(0,2);
-		c[9] = x(0,2)-15.0;*/
 
 		for (size_t i = 0; i <= 3; i++)
 		{
@@ -269,18 +269,8 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		c[2] = -M_PI * x(0, 3) * std::pow(x(0, 2), 2.0) - (4.0 / 3.0) * M_PI * std::pow(x(0, 2), 3.0) + 1296000;
 		c[3] = x(0, 3) - 240.0;
 
-		c[4] = 0.0 - x(0, 0);
-		c[5] = x(0, 0) - 99.0;
-
-		c[6] = 0.0 - x(0, 1);
-		c[7] = x(0, 1) - 99.0;
-
-		c[8] = 10.0 - x(0, 2);
-		c[9] = x(0, 2) - 200.0;
-
-		c[10] = 10.0 - x(0, 3);
-		c[11] = x(0, 3) - 200.0;
-		for (size_t i = 0; i <= 11; i++)
+		 
+		for (size_t i = 0; i <= 3; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
@@ -300,26 +290,19 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
  		break;
 	case 24:
 		//i-beam design problem 
-		temp = 5000 / ( (x(0, 2) * std::pow(x(0, 1) - 2.0 * x(0, 3), 3.0) / 12.0) + (x(0,0) *std::pow(x(0,3),3.0)/6.0) +
-			(2.0 *x(0,0)*x(0,3)) * (std::pow((x(0,1) -x(0,3))/2.0,2.0)));
-		c[0] = 2.0 * x(0, 0) * x(0, 2) + x(0, 2) * (x(0, 1) - 2.0 * x(0, 3));
-		
-		c[1] = 10.0 - x(0, 0);
-		c[2] = x(0, 0) - 50.0;
+		temp = 5000.0 / (c[4] + c[1]  + c[2] * std::pow(c[3],2.0)	);
 
-		c[3] = 10.0 - x(0, 1);
-		c[4] = x(0, 1) - 99.0;
+		c[1] = x(0, 0) * std::pow(x(0, 3), 3.0) / 6.0;
+		c[2] = 2.0 * x(0, 0) * x(0, 3);
+		c[3] = (x(0, 1) - x(0, 3) / 2.0);
+		c[4] =x(0,2)*  std::pow (	x(0, 1) - 2.0 * x(0, 3),3.0)	/12.0;
 
-		c[5] = 0.9 - x(0, 2);
-		c[6] = x(0, 2) - 5.0;
-
-		c[5] = 0.9 - x(0, 3);
-		c[6] = x(0, 3) - 5.0;
-		for (size_t i = 0; i <= 6; i++)
+		c[0] = 2.0 * x(0, 0) * x(0, 2) + x(0, 2) * (x(0, 1) - 2.0 * x(0, 3));		 
+		for (size_t i = 0; i < 1; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
-		return temp + sum;
+		return (temp + sum);
 		break;
 	case 25:
 		//weldead beam design 
@@ -344,7 +327,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
-		return temp + sum;
+		return (temp + sum);
 		break;
 	case 26:
 		//speed reducer design 
@@ -400,7 +383,63 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 	{
 		for (size_t j = 0; j < nvars; j++)
 		{
-			x_pattern(i, j) = LB + (UP - LB) * distr(eng);
+			//modify
+			//tension 
+			/*
+			f ((j == 0))
+			{
+				//x_pattern(i, j) = L1 + (U1 - L1) * distr(eng);
+				x_pattern(i, j) = distr1(eng);
+			}
+			else if (j == 1) {
+				//x_pattern(i, j) = L2 + (U2 - L2) * distr(eng);
+				x_pattern(i, j) = distr2(eng);
+			}
+			else {
+				//x_pattern(i, j) = L3 + (U3 - L3) * distr(eng);
+				x_pattern(i, j) = distr3(eng);
+
+			}
+			*/
+
+			/* pressure vessel 
+			if ((j == 0) || (j == 1))
+			{
+				//x_pattern(i, j) = L1 + (U1 - L1) * distr(eng);
+				x_pattern(i, j) = distr1(eng);
+			}
+			else {
+				//x_pattern(i, j) = L3 + (U3 - L3) * distr(eng);
+				x_pattern(i, j) = distr3(eng);
+
+			}*/
+
+			// i-beam design 
+			/*if ((j == 2) || (j == 3))
+			{
+				//x_pattern(i, j) = L1 + (U1 - L1) * distr(eng);
+				x_pattern(i, j) = distr3(eng);
+			}
+			else if (j==1)
+			{
+				x_pattern(i, j) = distr2(eng);
+			}
+			else {
+				//x_pattern(i, j) = L3 + (U3 - L3) * distr(eng);
+				x_pattern(i, j) = distr1(eng);
+			}
+			*/
+			if ((j == 0) || (j == 3))
+			{
+				//x_pattern(i, j) = L1 + (U1 - L1) * distr(eng);
+				x_pattern(i, j) = distr1(eng);
+			}
+			else {
+				x_pattern(i, j) = distr2(eng);
+
+			}
+			//stop
+			//x_pattern(i, j) = LB + (UP - LB) * distr(eng);
 		}
 		cost(i, 0) = NNA::f(x_pattern.row(i));
 	}
@@ -450,14 +489,14 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	std::ofstream writeF;
 	auto Maximum = 151;
 	int begin = 1;
-	writeF.open("tension.csv", std::ios::app);
+	int auxilaryVar = 0;
+	writeF.open("weldeadBeam.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
 		x_new = w * x_pattern;
 		x_pattern = x_new + x_pattern;
 		//return new_solution.stop 
-
 		//step 7: update the weight matrix..
 		for (size_t i = 0; i < NPOP; i++)
 		{
@@ -482,7 +521,59 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 
 				for (size_t l = 0; l < n_rotate; l++)
 				{
-					x_pattern(i, newDistr(eng)) = LB + (UP - LB) * distr(eng);
+					//modify here
+					auxilaryVar = newDistr(eng);
+					//tension
+					/*
+					if (2 == auxilaryVar)
+					{
+						//x_pattern(i, auxilaryVar) = L3 + (U3 - L3) * distr(eng);
+						x_pattern(i, auxilaryVar) = distr3(eng);
+					}
+					else if (1== auxilaryVar)
+					{
+						//x_pattern(i, auxilaryVar) = L2 + (U2 - L2) * distr(eng);
+						x_pattern(i, auxilaryVar) = distr2(eng);
+					}
+					else {
+						//x_pattern(i, auxilaryVar) = L1 + (U1 - L1) * distr(eng);
+						x_pattern(i, auxilaryVar) = distr1(eng);
+					}
+					*/ 
+					//pressure Vessel
+					/*
+					if ((auxilaryVar==1)|| (auxilaryVar==2))
+					{
+						//x_pattern(i, auxilaryVar) = L3 + (U3 - L3) * distr(eng);
+						x_pattern(i, auxilaryVar) = distr1(eng);
+					}
+					else {
+						x_pattern(i, auxilaryVar) = distr2(eng); 
+					}
+					*/
+					//i-Beam 
+					/*
+					if ((auxilaryVar == 2) || (auxilaryVar == 3))
+					{
+						//x_pattern(i, auxilaryVar) = L3 + (U3 - L3) * distr(eng);
+						x_pattern(i, auxilaryVar) = distr3(eng);
+					}
+					else if (auxilaryVar==1)
+					{
+						x_pattern(i, auxilaryVar) = distr2(eng);
+					}
+					else {
+						x_pattern(i, auxilaryVar) = distr1(eng);
+					}
+					*/
+					if ((auxilaryVar == 0) || (auxilaryVar == 3))
+					{
+						x_pattern(i, auxilaryVar) = distr1(eng);
+					}
+					else {
+						x_pattern(i, auxilaryVar) = distr2(eng);
+					}
+					// stop
 				}
 				n_wrotate = std::ceil(NPOP * beta);
 				for (size_t m = 0; m < n_wrotate; m++)
@@ -519,23 +610,89 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		{
 			for (size_t y_max = 0; y_max < nvars; y_max++)
 			{
-				if (x_pattern(x_max,y_max)< LB)
+				//modify here
+				//tension ...
+				/*
+				if (y_max == 0)
 				{
-					x_pattern(x_max, y_max) = LB;
+					if ( (x_pattern(x_max, y_max) < L1 ) || (x_pattern(x_max, y_max) > U1) )
+					{
+						x_pattern(x_max, y_max) = distr1(eng);
+					}
+				}
+				else if (y_max == 1) {
+					if ((x_pattern(x_max, y_max) < L2) || (x_pattern(x_max, y_max) > U2))
+					{
+
+						x_pattern(x_max, y_max) = distr2(eng);
+					}
+				}
+				else {
+					if ((x_pattern(x_max, y_max) < L3) || (x_pattern(x_max, y_max) > U3))
+					{
+						x_pattern(x_max, y_max) = distr3(eng);
+					}
+				}
+				*/
+				//pressure Vessel design 
+				/*
+				if ((y_max == 0) || (y_max==1))
+				{
+					if ((x_pattern(x_max, y_max) < L1) || (x_pattern(x_max, y_max) > U1))
+					{
+						x_pattern(x_max, y_max) = distr1(eng);
+					}
+				}
+				else
+				{
+					if ((x_pattern(x_max, y_max) < L3) || (x_pattern(x_max, y_max) > U3))
+					{
+						x_pattern(x_max, y_max) = distr3(eng);
+					}
+				}
+				*/
+				/*
+				* //ibeam design 
+				if ((y_max == 2) || (y_max == 3))
+				{
+					if ((x_pattern(x_max, y_max) < L3) || (x_pattern(x_max, y_max) > U3))
+					{
+						x_pattern(x_max, y_max) = distr3(eng);
+					}
+				}
+				else if (y_max==1)
+				{
+					if ((x_pattern(x_max, y_max) < L2) || (x_pattern(x_max, y_max) > U2))
+					{
+						x_pattern(x_max, y_max) = distr2(eng);
+					}
+				}
+				else
+				{
+					if ((x_pattern(x_max, y_max) < L1) || (x_pattern(x_max, y_max) > U1))
+					{
+						x_pattern(x_max, y_max) = distr1(eng);
+					}
+				}
+				*/
+				if ((y_max == 0) || (y_max == 3))
+				{
+					if ((x_pattern(x_max, y_max) < L1) || (x_pattern(x_max, y_max) > U1))
+					{
+						x_pattern(x_max, y_max) = distr1(eng);
+					}
+				}
+				else 
+				{
+					if ((x_pattern(x_max, y_max) < L2) || (x_pattern(x_max, y_max) > U2))
+					{
+						x_pattern(x_max, y_max) = distr2(eng);
+					}
 				}
 			}
 		}
 
-		for (size_t x_min = 0; x_min < NPOP; x_min++)
-		{
-			for (size_t y_min = 0; y_min < nvars; y_min++)
-			{
-				if (x_pattern(x_min, y_min) > UP)
-				{
-					x_pattern(x_min, y_min) = UP;
-				}
-			}
-		}
+		
 		//when calculate the cost, we already assume that all value not outside the lower and upper bound
 		for (size_t q = 0; q < NPOP; q++)
 		{
@@ -557,7 +714,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//find max cost
 		for (size_t s = 0; s < NPOP; s++)
 		{
-			if (cost(s, 0) == cost.maxCoeff()) {//max coeff.- transform the proble to max
+			if (cost(s, 0) == cost.maxCoeff()) {//max coeff.- transform the proble to min
 				value_index2(0, 0) = cost(s, 0);
 				value_index2(0, 1) = s;
 				break;
@@ -582,17 +739,20 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop 
-		writeF << begin<< "\t;";
+		writeF << begin << "\t;";
 		for (size_t i = 0; i < nvars; i++)
 		{
 			writeF << x_target(0,i) << "\t;";
 
 		}
-		writeF << target << std::endl;
+		writeF << target << std::endl;   
+		
+		//std::cout << x_target << "\t" << target << std::endl;	
 		++begin;
 	}
 	writeF << std::endl;
 	writeF.close();
+	//std::cout << x_target << std::endl;
 
 	//std::cout << target << std::endl;
 	//std::cout << "xtarge \t: " <<x_target << std::endl;
