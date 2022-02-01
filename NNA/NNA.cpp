@@ -12,8 +12,16 @@ double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
 std::random_device rd; //nondeterminioctic random distribution
 std::default_random_engine eng(rd());
-std::uniform_real_distribution<float> 
-distr(FLOAT_MIN, FLOAT_MAX), distr1(L1, U1), distr2(L2, U2), distr3(L3, U3), distr4(L4, U4);//random number between 1 and 0
+std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);
+//std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX), distr1(L1, U1), distr2(L2, U2), distr3(L3, U3), distr4(L4, U4);//random number between 1 and 0
+std::uniform_real_distribution<double> 
+d1(LoSpeedRed[0],UpSpeedRed[0]),
+d2(LoSpeedRed[1], UpSpeedRed[1]),
+d3(LoSpeedRed[2], UpSpeedRed[2]),
+d4(LoSpeedRed[3], UpSpeedRed[3]),
+d5(LoSpeedRed[4], UpSpeedRed[4]),
+d6(LoSpeedRed[5], UpSpeedRed[5]),
+d7(LoSpeedRed[6], UpSpeedRed[6]),cb(cantBeam[0],cantBeam[1]);
 std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1);//table 1
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 
@@ -42,7 +50,7 @@ int main()
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
-	int caseNum = 25;
+	int caseNum = 27;
 	double c[NPOP];
 	double sumConstrains = 0.0;
 	double temp = 0;
@@ -355,8 +363,21 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	//multiobjective optimization 
 	case 27:
+		//cantilever beam 
+		temp = 0.0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			temp += x(0, i);
+		}
+		temp = temp * 0.0624;
+		c[0] = (61.0 / std::pow(x(0, 0), 3.0)) + (37.0 / std::pow(x(0, 1), 2.0)) +
+			(19.0 / std::pow(x(0, 2), 3.0)) + (7.0 / std::pow(x(0, 3), 4.0)) +
+			(1.0 / std::pow(x(0, 4), 3.0)) -1.0;
+		return (temp+ PENALTY * std::pow(std::max(c[0], 0.0), 2.0));
+		break;
+	//multiobjective optimization 
+	case 35:
 		c[0] = std::pow(x(0, 0),2.0);
 		c[1] = std::pow(x(0, 0) - 2.0, 2.0);
 		for (size_t i = 0; i < 2; i++)
@@ -429,6 +450,8 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				x_pattern(i, j) = distr1(eng);
 			}
 			*/
+			//weldead beam
+			/*
 			if ((j == 0) || (j == 3))
 			{
 				//x_pattern(i, j) = L1 + (U1 - L1) * distr(eng);
@@ -437,9 +460,40 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 			else {
 				x_pattern(i, j) = distr2(eng);
 
+			}*/
+			//speed reducer 
+			/*
+			if (j==0)
+			{
+				x_pattern(i, j) = d1(eng);
 			}
+			else if (j == 1)
+			{
+				x_pattern(i, j) = d2(eng);
+			}
+			else if (j == 2)
+			{
+				x_pattern(i, j) = d3(eng);
+			}
+			else if (j == 3)
+			{
+				x_pattern(i, j) = d4(eng);
+			}
+			else if (j == 4)
+			{
+				x_pattern(i, j) = d5(eng);
+			}
+			else if (j == 5)
+			{
+				x_pattern(i, j) = d6(eng);
+			}
+			else {
+				x_pattern(i, j) = d7(eng);
+			}
+			*/
+			x_pattern(i, j) = cb(eng);
+
 			//stop
-			//x_pattern(i, j) = LB + (UP - LB) * distr(eng);
 		}
 		cost(i, 0) = NNA::f(x_pattern.row(i));
 	}
@@ -490,7 +544,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	auto Maximum = 151;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("weldeadBeam.csv", std::ios::app);
+	writeF.open("cantBeamDesign.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -566,13 +620,45 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						x_pattern(i, auxilaryVar) = distr1(eng);
 					}
 					*/
+					//weldead beam 
+					/* 
 					if ((auxilaryVar == 0) || (auxilaryVar == 3))
 					{
 						x_pattern(i, auxilaryVar) = distr1(eng);
 					}
 					else {
 						x_pattern(i, auxilaryVar) = distr2(eng);
+					} */ 
+					//speed reducer 
+					/*
+					if (auxilaryVar == 0)
+					{
+						x_pattern(i, auxilaryVar) = d1(eng);
 					}
+					else if (auxilaryVar == 1)
+					{
+						x_pattern(i, auxilaryVar) = d2(eng);
+					}
+					else if (auxilaryVar == 2)
+					{
+						x_pattern(i, auxilaryVar) = d3(eng);
+					}
+					else if (auxilaryVar == 3)
+					{
+						x_pattern(i, auxilaryVar) = d4(eng);
+					}
+					else if (auxilaryVar == 4)
+					{
+						x_pattern(i, auxilaryVar) = d5(eng);
+					}
+					else if (auxilaryVar == 5)
+					{
+						x_pattern(i, auxilaryVar) = d6(eng);
+					}
+					else {
+						x_pattern(i, auxilaryVar) = d7(eng);
+					}*/ 
+					x_pattern(i, auxilaryVar) = cb(eng);
 					// stop
 				}
 				n_wrotate = std::ceil(NPOP * beta);
@@ -675,6 +761,8 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 					}
 				}
 				*/
+				//weldead beam 
+				/* 
 				if ((y_max == 0) || (y_max == 3))
 				{
 					if ((x_pattern(x_max, y_max) < L1) || (x_pattern(x_max, y_max) > U1))
@@ -688,6 +776,70 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 					{
 						x_pattern(x_max, y_max) = distr2(eng);
 					}
+				} */ 
+				//speed reducer
+				/*
+				if (y_max == 0)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[0]) || 
+						(x_pattern(x_max, y_max) > UpSpeedRed[0]))
+					{
+						x_pattern(x_max, y_max) = d1(eng);
+					}
+				}
+				else if (y_max == 1)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[1]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[1]))
+					{
+						x_pattern(x_max, y_max) = d2(eng);
+					}
+				}
+				else if (y_max == 2)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[2]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[2]))
+					{
+						x_pattern(x_max, y_max) = d3(eng);
+					}
+				}
+				else if (y_max == 3)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[3]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[3]))
+					{
+						x_pattern(x_max, y_max) = d4(eng);
+					}
+				}
+				else if (y_max == 4)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[4]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[4]))
+					{
+						x_pattern(x_max, y_max) = d5(eng);
+					}
+				}
+				else if (y_max == 5)
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[5]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[5]))
+					{
+						x_pattern(x_max, y_max) = d6(eng);
+					}
+				}
+				else 
+				{
+					if ((x_pattern(x_max, y_max) < LoSpeedRed[6]) ||
+						(x_pattern(x_max, y_max) > UpSpeedRed[6]))
+					{
+						x_pattern(x_max, y_max) = d7(eng);
+					}
+				}
+				*/
+				if ((x_pattern(x_max, y_max) < cantBeam[0]) ||
+					(x_pattern(x_max, y_max) > cantBeam[1]))
+				{
+					x_pattern(x_max, y_max) = cb(eng);
 				}
 			}
 		}
@@ -751,7 +903,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		++begin;
 	}
 	writeF << std::endl;
-	writeF.close();
+	writeF.close(); 
 	//std::cout << x_target << std::endl;
 
 	//std::cout << target << std::endl;
