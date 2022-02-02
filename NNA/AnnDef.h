@@ -14,7 +14,10 @@
 double LoSpeedRed[7] = {2.6,0.7,17.0,7.3,7.8,2.9,5.0};//speedReducer 
 double UpSpeedRed[7] = {3.6,0.8,28.0,8.3,8.3,3.9,5.5 }; 
 double cantBeam[2] = { 0.01,100.0 };
-#define nvars 5
+double currugatedBulkhead[4] = { 0.0,50.0,0.0,5.0 };
+double tabColumn[2] = { 0.2 ,6.0 };
+double gear[2] = { 12.0,60.0 };
+#define nvars 4
 
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);

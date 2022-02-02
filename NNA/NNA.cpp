@@ -21,7 +21,9 @@ d3(LoSpeedRed[2], UpSpeedRed[2]),
 d4(LoSpeedRed[3], UpSpeedRed[3]),
 d5(LoSpeedRed[4], UpSpeedRed[4]),
 d6(LoSpeedRed[5], UpSpeedRed[5]),
-d7(LoSpeedRed[6], UpSpeedRed[6]),cb(cantBeam[0],cantBeam[1]);
+d7(LoSpeedRed[6], UpSpeedRed[6]),cb(cantBeam[0],cantBeam[1]), 
+cur1(currugatedBulkhead[0] , currugatedBulkhead[1])  , cur2(currugatedBulkhead[2] , currugatedBulkhead[3]),
+tC(tabColumn[0]  , tabColumn[1]), ge(gear[0], gear[1]);
 std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1);//table 1
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 
@@ -37,7 +39,7 @@ int main()
 	Eigen::Matrix<double, 1, nvars> x_target;
 	Eigen::Matrix<double, NPOP, 1> w_target;
 	//call NNA
-	for (size_t i = 0; i < 20; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -50,7 +52,7 @@ int main()
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
-	int caseNum = 27;
+	int caseNum = 30;
 	double c[NPOP];
 	double sumConstrains = 0.0;
 	double temp = 0;
@@ -376,6 +378,48 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			(1.0 / std::pow(x(0, 4), 3.0)) -1.0;
 		return (temp+ PENALTY * std::pow(std::max(c[0], 0.0), 2.0));
 		break;
+	case 28:
+		//currugated bulkhead design 
+		c[0] = 5.885 * x(0, 3) * (x(0, 0) + x(0, 2));
+		c[1] = std::fabs (std::pow(x(0, 2), 2.0) - std::pow(x(0, 1),2.0));
+		c[2] = x(0, 0) + std::sqrt(c[1]);
+		temp = c[0] / c[2]; 
+		//constrains
+		c[3] = -1.0 * x(0, 3) * x(0, 1) * (0.4 * x(0, 0) + x(0, 2) / 6.0) + 8.94 * (x(0, 0) + std::sqrt(c[1]));
+		c[4] = -1.0 * x(0, 3) * std::pow( x(0, 1),2.0)  * (0.2 * x(0, 0) + x(0, 2) / 12.0) + 2.2* std::pow (	(8.94 * (x(0, 0) + std::sqrt(c[1]) ) ),1.33333333333);
+		c[5] = -1.0 * x(0, 3) + 0.0156 * x(0,0) + 0.15;
+		c[6] =  -1.0 * x(0, 3) + 0.0156 * x(0, 2) + 0.15;
+		c[7] = -1.0 * x(0, 3) + 1.05;
+		c[8] = -1.0* x(0, 2) + x(0, 1); 
+		for (size_t i = 3; i < 9; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		} 
+		return (temp + sum);
+		break;
+	case 29:
+		//piston lever
+		temp = 9.8 * x(0, 0) * x(0, 1) + 2.0 * x(0, 0);
+		c[0] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0);
+		
+		c[1] = (2500 / M_PI * x(0, 0) * x(0, 1) * 500.0)-1.0 ;
+		c[2] = (8.0 * 2500 * std::pow(250.0, 2.0) / (std::pow(M_PI, 3.0) * 0.85 * 106 * x(0, 0) * x(0, 1) * c[0]) ) - 1.0;
+		c[3] = 2.0 / x(0, 0) - 1.0;
+		c[4] = x(0, 0) / 14.0 - 1.0;
+		c[5] = 0.2 / x(0, 1) - 1.0;
+		c[6] = x(0, 1) / 0.8 - 1.0;
+		for (size_t i = 1; i < 7; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (temp + sum);
+		break;
+	case 30:
+		c[0] = 1 / 6.931;
+		c[1] = x(0, 1) * x(0, 2) / x(0, 0) * x(0, 3);
+		temp = std::pow(c[0] - c[1], 2.0);
+		return temp;
+		break;
 	//multiobjective optimization 
 	case 35:
 		c[0] = std::pow(x(0, 0),2.0);
@@ -491,8 +535,26 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				x_pattern(i, j) = d7(eng);
 			}
 			*/
-			x_pattern(i, j) = cb(eng);
+			
+			//cantvilear beam design 
+			/*
+			x_pattern(i, j) = cb(eng); */
+			//corrugated bulkhead design 
+			/*
+			if ( (j == 0) || (j == 1) || (j == 2) )
+			{
+				x_pattern(i, j) = cur1(eng);
+			}
+			else 
+			{
+				x_pattern(i, j) = cur2(eng);
+			}*/ 
+			//piston lever
+			/*
+			x_pattern(i, j) = tC(eng); */
 
+			x_pattern(i, j) = ge(eng);
+			x_pattern(i, j) = std::round(x_pattern(i, j));
 			//stop
 		}
 		cost(i, 0) = NNA::f(x_pattern.row(i));
@@ -541,10 +603,10 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	auto Maximum = 151;
+	int Maximum = 151;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("cantBeamDesign.csv", std::ios::app);
+	//writeF.open("currugateBulkheadReduce.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -658,7 +720,26 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 					else {
 						x_pattern(i, auxilaryVar) = d7(eng);
 					}*/ 
-					x_pattern(i, auxilaryVar) = cb(eng);
+					//cantevelar beam 
+					/* 
+					x_pattern(i, auxilaryVar) = cb(eng); */ 
+					//corrugated buckhead 
+					/* 
+					if ((auxilaryVar == 0) || (auxilaryVar == 1) || (auxilaryVar == 2))
+					{
+						x_pattern(i, auxilaryVar) = cur1(eng);
+					}
+					else {
+						x_pattern(i, auxilaryVar) = cur2(eng);
+					} */ 
+					//piston lever 
+					/* 
+					x_pattern(i, auxilaryVar) = tC(eng); */
+
+					x_pattern(i, auxilaryVar) = ge(eng);
+					x_pattern(i, auxilaryVar) = std::round(x_pattern(i, auxilaryVar));
+
+
 					// stop
 				}
 				n_wrotate = std::ceil(NPOP * beta);
@@ -680,6 +761,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 				for (size_t p = 0; p < nvars; p++)
 				{
 					x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
+					x_pattern(i, p) = std::round(x_pattern(i, p));
 					//equation 13, page 751
 					//add auxilary makro for mixed integer problem. test case problem 19
 					/*if (p == 0 || p == 1)//position of the integer problem. for 
@@ -836,10 +918,44 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 					}
 				}
 				*/
+				//cantevelar beam 
+				/* 
 				if ((x_pattern(x_max, y_max) < cantBeam[0]) ||
 					(x_pattern(x_max, y_max) > cantBeam[1]))
 				{
 					x_pattern(x_max, y_max) = cb(eng);
+				} */ 
+				//corrugated bulkhead 
+				/*
+				 if ((y_max == 0) || (y_max == 1) || (y_max == 2))
+					{
+						if ((x_pattern(x_max, y_max) < currugatedBulkhead[0]) ||
+							(x_pattern(x_max, y_max) > currugatedBulkhead[1]))
+						{
+							x_pattern(x_max, y_max) = cur1(eng);
+						}
+					}
+				 else
+				 {
+					 if ((x_pattern(x_max, y_max) < currugatedBulkhead[2]) ||
+						 (x_pattern(x_max, y_max) > currugatedBulkhead[3]))
+					 {
+						 x_pattern(x_max, y_max) = cur2(eng);
+					 }
+				 } */
+				//piston leaver 
+				/* 
+				if ((x_pattern(x_max, y_max) < tabColumn[0]) ||
+					(x_pattern(x_max, y_max) > tabColumn[1]))
+				{
+					x_pattern(x_max, y_max) = tC(eng);
+				}*/
+				if ((x_pattern(x_max, y_max) < gear[0]) ||
+					(x_pattern(x_max, y_max) > gear[1]))
+				{
+					x_pattern(x_max, y_max) = ge(eng);
+					x_pattern(x_max, y_max) = std::round(x_pattern(x_max, y_max));
+
 				}
 			}
 		}
@@ -891,19 +1007,19 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop 
-		writeF << begin << "\t;";
+		/*writeF << begin << "\t;";
 		for (size_t i = 0; i < nvars; i++)
 		{
 			writeF << x_target(0,i) << "\t;";
 
 		}
-		writeF << target << std::endl;   
-		
-		//std::cout << x_target << "\t" << target << std::endl;	
+		writeF << target << std::endl;    
+		*/
+		std::cout << x_target << "\t" << target << std::endl;	
 		++begin;
 	}
-	writeF << std::endl;
-	writeF.close(); 
+	//writeF << std::endl;
+	//writeF.close(); 
 	//std::cout << x_target << std::endl;
 
 	//std::cout << target << std::endl;
