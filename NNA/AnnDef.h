@@ -7,18 +7,21 @@
 #include "AnnImp.cpp"
 #define NPOP 100
 #define MAX  140
-//float L1 = 0.05, U1 = 0.20, L2 = 0.25, U2 = 1.3, L3 = 10.00, U3 = 12.00;//tension
-//float L1 = 0.0, U1 = 99.0, L2 = 0.0, U2 = 99.0, L3 = 10.00, U3 = 100.0, L4 = 10.00, U4 = 100.0; //pressure vessel
-//float L1 = 47.0, U1 = 51.0, L2 = 75.0, U2 = 85.0, L3 = 0.99, U3 = 5.0, L4 = 0.99, U4 = 5.0;//i-beam 
-//float L1 = 0.1, U1 = 2.0, L2 = 0.1, U2 = 10.0, L3, U3, L4, U4;//weldead-beam 
+double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
+double pressureVes[8] = { 1.0,99.0,1.0,99.0,10.00,200.0,10.0,200.0 };
+double ibeam[8] = { 47.0,51.0,75.0,85.0,0.99,5.0,0.99,5.0 };
+double weldeadBeam[4] = { 0.1,2.0,0.1,10.0 };
 double LoSpeedRed[7] = {2.6,0.7,17.0,7.3,7.8,2.9,5.0};//speedReducer 
 double UpSpeedRed[7] = {3.6,0.8,28.0,8.3,8.3,3.9,5.5 }; 
 double cantBeam[2] = { 0.01,100.0 };
 double currugatedBulkhead[4] = { 0.0,50.0,0.0,5.0 };
 double tabColumn[2] = { 0.2 ,6.0 };
 double gear[2] = { 12.0,60.0 };
-#define nvars 4
-
+double LoMulD[5] = { 60.0,90.0,1.5,600.0,2.0 };
+double UpMulD[5] = { 80.0,110.0,3.0,1000.0,9.0 };
+double bT[4] = { 1.5,2.0,2.5,3.0 }; //constrains for multiple disk clutch brake design 
+double bF[41] = { 600.0 }; 
+#define nvars 5
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
 	static void initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::Matrix<double, NPOP, NPOP>& w,
