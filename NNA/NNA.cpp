@@ -54,14 +54,9 @@ int main()
 	{
 		bF[i] = bF[0] + (i * 10.0);
 	}
-	Eigen::Matrix<double, 1, nvars> check;
-	check << 80, 90, 2, 600, 8;
-	std::cout << NNA::f(check);
-	check << 80, 90, 2, 600, 7;
-	std::cout <<" " << NNA::f(check);
+	Eigen::MatrixXd big(300,300);
+	std::cout << big.size();
 
-
-	// stop
 	//call NNA
 	for (size_t i = 0; i < 0; i++)
 	{
@@ -292,8 +287,8 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
-		//return (temp+sum);
-		return temp;
+		return (temp+sum);
+		 
 		break;
 
 	/*case 0:
