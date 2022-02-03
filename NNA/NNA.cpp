@@ -8,7 +8,7 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
-#define KODE 1
+int KODE= 9;
 
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -44,7 +44,7 @@ int main()
 	Eigen::Matrix<double, NPOP, 1>  cost;
 	Eigen::Matrix<double, NPOP, nvars> x_pattern, x_new;
 	Eigen::Matrix<double, 1, NPOP> ww;
-	Eigen::Matrix<double, NPOP, NPOP> w;
+	Eigen::MatrixXd w(NPOP,NPOP);
 	Eigen::Matrix<double, 1, NPOP - 1> t;
 	Eigen::Matrix <double, 1, 2> value_index;
 	Eigen::Matrix<double, 1, nvars> x_target;
@@ -54,11 +54,10 @@ int main()
 	{
 		bF[i] = bF[0] + (i * 10.0);
 	}
-	Eigen::MatrixXd big(300,300);
-	std::cout << big.size();
+	
 
 	//call NNA
-	for (size_t i = 0; i < 0; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -126,7 +125,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	case 2:
+	case 20:
 		//three-bar truss design 
 		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
 		c[0] = ((std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
@@ -138,7 +137,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	case 3:
+	case 2:
 		//i-beam design problem 
 		temp = 5000.0 / (c[4] + c[1] + c[2] * std::pow(c[3], 2.0));
 
@@ -154,7 +153,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 4:
+	case 3:
 		//weldead beam design 
 		temp = 1.10471 * std::pow(x(0, 0), 2.0) * x(0, 1) + 0.04811 * x(0, 2) * x(0, 3) * (14 + x(0, 1));
 		M = P * (L + x(0, 1) / 2.0);
@@ -179,7 +178,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 5:
+	case 4:
 		//speed reducer design 
 		temp = 0.7854 * x(0, 0) * std::pow(x(0, 1), 2.0) *
 			(3.3333 * std::pow(x(0, 2), 2.0) + 14.9334 * x(0, 2) - 43.0934) -
@@ -205,7 +204,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	case 6:
+	case 5:
 		//cantilever beam 
 		temp = 0.0;
 		for (size_t i = 0; i < 5; i++)
@@ -218,7 +217,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			(1.0 / std::pow(x(0, 4), 3.0)) - 1.0;
 		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0));
 		break;
-	case 7:
+	case 6:
 		//currugated bulkhead design 
 		c[0] = 5.885 * x(0, 3) * (x(0, 0) + x(0, 2));
 		c[1] = std::fabs(std::pow(x(0, 2), 2.0) - std::pow(x(0, 1), 2.0));
@@ -237,7 +236,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 8:
+	case 7:
 		//piston lever
 		temp = 9.8 * x(0, 0) * x(0, 1) + 2.0 * x(0, 0);
 		c[0] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0);
@@ -254,14 +253,14 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 9:
+	case 8:
 		//gear trains
 		c[0] = 1 / 6.931;
 		c[1] = x(0, 1) * x(0, 2) / x(0, 0) * x(0, 3);
 		temp = std::pow(c[0] - c[1], 2.0);
 		return temp;
 		break;
-	case 10:
+	case 9:
 		//multiple disc clutch brake problem 
 		mC = { 20.0,55.0,7.8e-6,1.0,1000.0,15.0,0.5,1.5,40.0,3.0,250.0,10.0,30.0,0.5 };
 		//delr 0 ,iz 1,pau 2,pmax 3, fmax 4, tmax 5, miu 6, s 7, ms 8, mf 9, n   10, vsmax 11, lmax 12, del 13
@@ -288,9 +287,50 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
 		return (temp+sum);
-		 
 		break;
-
+	case 12://problem A.1 ali sadolah
+		temp = std::pow(x(0, 0) - 2.0,2.0);
+		c[0] = x(0, 0) - 2.0 * x(0, 1) + 1.0;//equality 
+		c[1] = (std::pow(x(0, 0), 2.0) / 4.0) + std::pow(x(0, 1), 2.0) - 1.0;
+		return (temp + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) + PENALTY*std::pow(c[0], 2.0));
+		break;
+	case 13://problem a3.  
+		temp = std::pow((std::pow(x(0, 0), 2.0) + 
+			std::pow( ( x(0, 1) - 11.0), 2.0) + x(0,0)+std::pow(x(0,1),2.0)-7.0),2.0);
+		c[0] = -4.84 + std::pow(x(0, 0) - 0.05, 2.0) + std::pow(x(0, 1) - 2.5, 2.0);
+		c[1] = -std::pow(x(0, 0), 2.0) - std::pow(x(0, 1) - 2.5, 2.0) + 4.84;
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 14://problem a5 
+		temp = std::pow(x(0, 0) - 10.0, 3.0) + std::pow(x(0, 1) - 20.0, 3.0);
+		c[0] - std::pow(x(0, 0) - 5.0, 2.0) - std::pow(x(0, 1) - 5.0, 2.0) + 100.0;
+		c[1] = std::pow(x(0, 0) - 6.0, 2.0) + std::pow(x(0, 1) - 5.0, 2.0) - 82.81;
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (temp + sum);
+		break;
+	case 15://a6
+		temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0)+
+			3.0* std::pow(x(0, 3) - 11.0, 2.0)+ 10.0*std::pow(x(0,4),6.0)+7.0*std::pow(x(0,5),2.0)+
+			std::pow(x(0,6),4.0) - 4.0*x(0,5)*x(0,6)-10.0*x(0,5)-8.0*x(0,6);
+		c[1] = -127.0 + 2.0 * std::pow(x(0, 0), 2.0) + 3.0 * std::pow(x(0, 1), 4.0) + x(0, 2) + 4.0 * std::pow(x(0, 3), 2.0) +
+			5.0 * x(0, 4);
+		c[2] = -282.0 + 7.0 * x(0, 0) + 3.0 * x(0, 1) + 10.0 * std::pow(x(0, 2), 2.0) + x(0, 3) - x(0, 4);
+		c[3] = -196.0 + 23.0 * x(0, 0) + std::pow(x(0, 1), 2.0) + 6.0 * std::pow(x(0, 5), 2.0) - 8.0 * x(0, 6);
+		c[4] = 4.0 * std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 3.0 * x(0, 0) * x(0, 1) +
+			2.0 * std::pow(x(0, 2), 2.0) + 5.0 * x(0, 5) - 11.0 * x(0, 6);
+		for (size_t i = 1; i < 5; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (temp + sum);
+		break;
 	/*case 0:
 		//griewank function 
 		for (size_t i = 0; i < nvars; i++)
@@ -487,7 +527,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	}
 	return 0;
 }
-void NNA::initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::Matrix<double, NPOP, NPOP>& w,
+void NNA::initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::MatrixXd& w,
 	Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& cost) {
 	ww = ww.setOnes() * 0.5;
 	w = 0.5 * w.setIdentity();
@@ -503,6 +543,7 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 			//modify
 			switch (KODE)
 			{
+				//tension 
 			case 0:
 				if ((j == 0))
 				{
@@ -605,6 +646,7 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				x_pattern(i, j) = std::round(x_pattern(i, j)); 
 				break;
 			case 9:
+				//multiple disk 
 				if (j == 0)
 				{
 					x_pattern(i, j) = md1(eng);
@@ -624,7 +666,6 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				else if (j == 3)
 				{
 					x_pattern(i, j) = bF[muldiskF(eng)];
-					x_pattern(i, j) = std::round(x_pattern(i, j));
 
 				}
 				else
@@ -649,7 +690,7 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 		}
 	}
 }
-void NNA::generateWeight(Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, 1, NPOP - 1>& t) {
+void NNA::generateWeight(Eigen::MatrixXd& w, Eigen::Matrix<double, 1, NPOP - 1>& t) {
 	for (int var = 0; var < w.cols(); var++)
 	{
 		double total = 0.0;
@@ -676,13 +717,13 @@ void NNA::generateWeight(Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<dou
 }
 void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 	Eigen::Matrix <double, 1, 2>& value_index, Eigen::Matrix<double, NPOP, 1>& w_target,
-	Eigen::Matrix<double, NPOP, NPOP>& w) {
+	Eigen::MatrixXd& w) {
 	x_target = x_pattern.row(int(value_index(0, 1)));
 	target = value_index(0, 0);
 	w_target = w.col(int(value_index(0, 1)));
 }
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
-	Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
+	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
 	int Maximum = 151;
 	int begin = 1;
@@ -715,13 +756,13 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		{
 			if (distr(eng) < beta) {
 				n_rotate = std::ceil(nvars * beta);
-
 				for (size_t l = 0; l < n_rotate; l++)
 				{
 					//modify here
-					auxilaryVar = newDistr(eng);
 					switch (KODE)
 					{
+					auxilaryVar = newDistr(eng);
+
 					case 0:
 						//tension
 						if (2 == auxilaryVar)
@@ -800,6 +841,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						else {
 							x_pattern(i, auxilaryVar) = d7(eng);
 						}
+						break;
 					case 5:
 						//cantevelar beam 
 						x_pattern(i, auxilaryVar) = cb(eng); 
@@ -1114,7 +1156,6 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 							(x_pattern(x_max, y_max) > UpMulD[3]))
 						{
 							x_pattern(x_max, y_max) = bF[muldiskF(eng)];
-							x_pattern(x_max, y_max) = std::round(x_pattern(x_max, y_max));
 
 						}
 					}
@@ -1199,3 +1240,4 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	//std::cout << target << std::endl;
 	//std::cout << "xtarge \t: " <<x_target << std::endl;
 }
+ 

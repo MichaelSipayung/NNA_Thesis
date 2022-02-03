@@ -5,7 +5,7 @@
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 100
+#define NPOP 150
 #define MAX  140
 double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
 double pressureVes[8] = { 1.0,99.0,1.0,99.0,10.00,200.0,10.0,200.0 };
@@ -24,14 +24,14 @@ double bF[41] = { 600.0 };
 #define nvars 5
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
-	static void initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::Matrix<double, NPOP, NPOP>& w,
+	static void initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::MatrixXd &w,
 		Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& cost);
 	static void CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& cost,
 		Eigen::Matrix <double, 1, 2>& value_index);
-	static void generateWeight(Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, 1, NPOP - 1>& t);
+	static void generateWeight(Eigen::MatrixXd& w, Eigen::Matrix<double, 1, NPOP - 1>& t);
 	static void setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<double, NPOP, nvars>& x_pattern,
-		Eigen::Matrix <double, 1, 2>& value_index, Eigen::Matrix<double, NPOP, 1>& w_target, Eigen::Matrix<double, NPOP, NPOP>& w);
+		Eigen::Matrix <double, 1, 2>& value_index, Eigen::Matrix<double, NPOP, 1>& w_target, Eigen::MatrixXd& w);
 	static void Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
-		Eigen::Matrix<double, NPOP, NPOP>& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target);
+		Eigen::MatrixXd &w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target);
 };
 #endif
