@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <Eigen/dense>
 #include <random> 
 #include <algorithm>
@@ -330,6 +330,38 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
 		return (temp + sum);
+		break;
+	case 16://problem a4:max problem translate to minimization 
+		temp = -std::pow(std::sin(2.0 * M_PI * x(0, 0)), 3.0) * (std::sin(2.0 * M_PI * x(0, 1)))
+			/ std::pow(x(0, 0), 3.0) * (x(0, 0) + x(0, 1)) ;
+		c[0] = std::pow(x(0, 0), 2.0) - x(0, 1) + 1.0;
+		c[1] = 1.0 - x(0, 0) + std::pow(x(0, 1) - 4.0, 2.0);
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 17: //problem a7. sadollah stop problem  set 
+		temp = 5.3578547 * std::pow(x(0, 2), 3.0) + 0.8356891 * x(0, 0) * x(0, 4) +
+			37.293239 * x(0, 0) + 40729.141;
+		c[0] = 85.334407 + 0.0056858 * x(0, 1) * x(0, 4) + 0.0006262 * x(0, 0) * x(0, 3)
+			- 0.0022053 * x(0, 2) * x(0, 4) + 92.0;
+		c[1]  = -85.334407 - 0.0056858 * x(0, 1) * x(0, 4) - 0.0006262 * x(0, 0) * x(0, 3)
+			-0.0022053 * x(0, 2) * x(0, 4) + 92.0;
+		c[2] = 80.51249 + 0.0071317 * x(0, 1) * x(0, 4) + 0.0029955 * x(0, 0) * x(0, 1)
+			+ 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
+		c[3] = -80.51249 - 0.0071317 * x(0, 1) * x(0, 4) - 0.0029955 * x(0, 0) * x(0, 1)
+			- 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
+		c[4] = 9.300961 + 0.0047026 * x(0, 2) * x(0, 4) + 0.0012547*x(0, 0) * x(0, 2);
+		+0.0019085*x(0, 2) * x(0, 3) - 25.0;
+		c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2);
+		-0.0019085 * x(0, 2) * x(0, 3) + 25.0;
+		for (size_t i = 0; i < 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
 		break;
 	/*case 0:
 		//griewank function 
