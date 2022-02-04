@@ -125,7 +125,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	case 20:
+	case 299:
 		//three-bar truss design 
 		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
 		c[0] = ((std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
@@ -383,7 +383,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 19://b01
+	case 19://b01 qiang zhao, two stage multi swarm 
 		temp = 3.0 * x(0, 0) + 0.000001 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1) + (0.000002 / 3.0) * std::pow(x(0, 1), 3.0);
 		c[0] = -x(0, 3) + x(0, 2) - 0.55; //inequality 
 		c[1] = -x(0, 2) + x(0, 3) - 0.55;
@@ -399,6 +399,50 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			sum += PENALTY * std::pow(c[i],2.0);
 		}
 		return	(temp + sum);
+		break;
+	case 20://Value - Estimation Function- x.l sun. problem 1
+		temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
+		c[0] = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1), 2.0) - std::pow(1.6, 2.0);
+		c[1] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1) - 3.0, 2.0) - std::pow(2.7, 2.0);
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 21: // Value - Estimation Function - x.l sun.problem 2
+		temp = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1) - 1.0, 2.0) +1.0;
+		c[0] = x(0, 0) + x(0, 1) - 2.0;
+		c[1] = std::pow(x(0, 0), 2.0) - x(0, 1);
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 22://A novel modified BSA, hailong wang, problem 3
+		temp = std::pow(std::pow(x(0, 0), 2.0) + x(0, 1) - 11.0, 2.0) + std::pow(std::pow(x(0, 1), 2.0) + x(0, 0) - 7.0, 2.0);
+		c[0] = std::pow(x(0, 0) - 0.05, 2.0) + std::pow(x(0, 1) - 2.5, 2.0) - 4.84;
+		c[1] = -std::pow(x(0, 0), 2.0) - std::pow(x(0, 1) - 2.5, 2.0) + 4.84;
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break; 
+	case 23://Quantum seeded evolutionary. problem g10
+		temp = x(0, 0) + x(0, 1) + x(0, 2);
+		c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
+		c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
+		c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
+		c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) - 100 * x(0, 0) - 83333.333;
+		c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1)*x(0,3) - 1250*x(0,3);
+		c[5] = -x(0, 2) * x(0, 7) + 1250000  + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
+		for (size_t i = 0; i < 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
 		break;
 	/*case 0:
 		//griewank function 
