@@ -8,8 +8,8 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
-int KODE= 9;
-
+#define KODE 9
+#define FKODE 9
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
@@ -36,6 +36,12 @@ ib1(ibeam[0] , ibeam[1]), ib2(ibeam[2], ibeam[3]), ib3(ibeam[4], ibeam[5]), ib4(
 wb1(weldeadBeam[0] , weldeadBeam[1]) , wb2(weldeadBeam[2], weldeadBeam[3]);
 std::uniform_int_distribution<int> newDistr(0, nvars - 1), newDistrWeight(0, NPOP - 1) , 
 muldiskF(0,40) , muldiskT(0,3);//table 1
+//defenition for default problem without specific bound
+std::uniform_real_distribution<double> DF(def[0], def[1]),
+CS1(cs1421[0] , cs1421[1]), CS2(cs1421[2], cs1421[3]), 
+DS1(cs15[0], cs15[1]), DS2(cs15[2], cs15[3]), DS3(cs15[4], cs15[5]),
+ES1(cs16[0], cs16[1]), ES2(cs16[2], cs16[3]), ES3(cs16[4], cs16[5]);
+
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
  
 int main()
@@ -54,10 +60,8 @@ int main()
 	{
 		bF[i] = bF[0] + (i * 10.0);
 	}
-	
-
 	//call NNA
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < 0; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -82,7 +86,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double P = 6000, L = 14, E = 30e+6, G = 12e+6,
 	t_max = 13600, s_max = 30000, d_max = 0.25,M,R,J,P_c,t1,t,s,d,t2;
 	//note max transform by pre mul-multiplying the objective function by -1
-	switch (KODE)
+	switch (FKODE)
 	{
 	case 0:
 		//tension/ compression spring design problem 
@@ -125,18 +129,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return temp + sum;
 		break;
-	case 299:
-		//three-bar truss design 
-		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
-		c[0] = ((std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
-		c[1] = ((x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
-		c[2] = (1.0 / (std::sqrt(2.0) * x(0, 1) + x(0, 0))) * 2.0 - 2.0;
-		for (size_t i = 0; i <= 2; i++)
-		{
-			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return temp + sum;
-		break;
+	
 	case 2:
 		//i-beam design problem 
 		temp = 5000.0 / (c[4] + c[1] + c[2] * std::pow(c[3], 2.0));
@@ -288,6 +281,18 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp+sum);
 		break;
+	case 10:
+		//three-bar truss design 
+		temp = (2.0 * std::sqrt(2.0) * x(0, 0) + x(0, 1)) * 100.0;
+		c[0] = ((std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
+		c[1] = ((x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1))) * 2.0 - 2.0;
+		c[2] = (1.0 / (std::sqrt(2.0) * x(0, 1) + x(0, 0))) * 2.0 - 2.0;
+		for (size_t i = 0; i <= 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return temp + sum;
+		break;
 	case 12://problem A.1 ali sadolah.fix
 		temp = std::pow(x(0, 0) - 2.0,2.0) + std::pow(x(0, 1) - 1.0, 2.0);
 		c[0] = x(0, 0) - 2.0 * x(0, 1) + 1.0;//equality 
@@ -343,7 +348,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			- 0.0021813 * std::pow(x(0, 2), 2.0) + 90.0;
 		c[4] = 9.300961 + 0.0047026 * x(0, 2) * x(0, 4) + 0.0012547*x(0, 0) * x(0, 2)
 		+0.0019085*x(0, 2) * x(0, 3) - 25.0;
-		c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2);
+		c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2)
 		-0.0019085 * x(0, 2) * x(0, 3) + 20.0;
 		for (size_t i = 0; i < 6; i++)
 		{
@@ -351,7 +356,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 17://qiang zhao, two stage multi swarm.fix ptoblm 5 fix 
+	case 17://qiang zhao, two stage multi swarm.fix problem 5 fix 
 		temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0) +
 			3.0 * std::pow(x(0, 3) - 11.0, 2.0) + 10.0 * std::pow(x(0, 4), 6.0) + 7.0 * std::pow(x(0, 5), 2.0) +
 			std::pow(x(0, 6), 4.0) - 4.0 * x(0, 5) * x(0, 6) - 10.0 * x(0, 5) - 8.0 * x(0, 6);
@@ -799,7 +804,46 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 
 				}
 				break;
+			case 14:
+				if (j==0)
+				{
+					x_pattern(i, j) = CS1(eng);
+				}
+				else
+				{
+					x_pattern(i, j) = CS2(eng);
+				}
+				break;
+			case 15:
+				if (j == 0)
+				{
+					x_pattern(i, j) = DS1(eng);
+				}
+				if (j == 1)
+				{
+					x_pattern(i, j) = DS2(eng);
+				}
+				else
+				{
+					x_pattern(i, j) = DS2(eng);
+				}
+				break;
+			case 16:
+				if (j == 0)
+				{
+					x_pattern(i, j) = ES1(eng);
+				}
+				if (j == 1)
+				{
+					x_pattern(i, j) = ES2(eng);
+				}
+				else
+				{
+					x_pattern(i, j) = ES3(eng);
+				}
+				break;
 			default:	
+				x_pattern(i, j) = DF(eng);
 				break;
 			}
 		}
@@ -882,11 +926,10 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 				n_rotate = std::ceil(nvars * beta);
 				for (size_t l = 0; l < n_rotate; l++)
 				{
+					auxilaryVar = newDistr(eng);
 					//modify here
 					switch (KODE)
 					{
-					auxilaryVar = newDistr(eng);
-
 					case 0:
 						//tension
 						if (2 == auxilaryVar)
@@ -1021,7 +1064,46 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 
 						}
 						break;
+					case 14:
+						if (auxilaryVar == 0)
+						{
+							x_pattern(i, auxilaryVar) = CS1(eng);
+						}
+						else  
+						{
+							x_pattern(i, auxilaryVar) = CS2(eng);
+						}
+						break;
+					case 15:
+						if (auxilaryVar == 0)
+						{
+							x_pattern(i, auxilaryVar) = DS1(eng);
+						}
+						if (auxilaryVar == 1)
+						{
+							x_pattern(i, auxilaryVar) = DS2(eng);
+						}
+						else
+						{
+							x_pattern(i, auxilaryVar) = DS3(eng);
+						}
+						break;
+					case 16:
+						if (auxilaryVar == 0)
+						{
+							x_pattern(i, auxilaryVar) = ES1(eng);
+						}
+						if (auxilaryVar == 1)
+						{
+							x_pattern(i, auxilaryVar) = ES2(eng);
+						}
+						else
+						{
+							x_pattern(i, auxilaryVar) = ES3(eng);
+						}
+						break;
 					default:
+						x_pattern(i, auxilaryVar) = DF(eng);
 						break;
 					}
 				}
@@ -1294,7 +1376,85 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						}
 					}
 					break;
+				case 14:
+					if(y_max == 0)
+					{
+						if ((x_pattern(x_max, y_max) < cs1421[0]) ||
+							(x_pattern(x_max, y_max) > cs1421[1]))
+						{
+							x_pattern(x_max, y_max) = CS1(eng);
+						}
+					}
+					else 
+					{
+						if ((x_pattern(x_max, y_max) < cs1421[2]) ||
+							(x_pattern(x_max, y_max) > cs1421[3]))
+						{
+							x_pattern(x_max, y_max) = CS2(eng);
+
+						}
+					}
+					break;
+				case 15:
+					if (y_max == 0)
+					{
+						if ((x_pattern(x_max, y_max) < cs15[0]) ||
+							(x_pattern(x_max, y_max) > cs15[1]))
+						{
+							x_pattern(x_max, y_max) = DS1(eng);
+						}
+					}
+					if (y_max == 1)
+					{
+						if ((x_pattern(x_max, y_max) < cs15[2]) ||
+							(x_pattern(x_max, y_max) > cs15[3]))
+						{
+							x_pattern(x_max, y_max) = DS2(eng);
+						}
+					}
+					else
+					{
+						if ((x_pattern(x_max, y_max) < cs15[4]) ||
+							(x_pattern(x_max, y_max) > cs15[5]))
+						{
+							x_pattern(x_max, y_max) = DS3(eng);
+
+						}
+					}
+					break;
+				case 16:
+					if (y_max == 0)
+					{
+						if ((x_pattern(x_max, y_max) < cs16[0]) ||
+							(x_pattern(x_max, y_max) > cs16[1]))
+						{
+							x_pattern(x_max, y_max) = ES1(eng);
+						}
+					}
+					if (y_max == 1)
+					{
+						if ((x_pattern(x_max, y_max) < cs16[2]) ||
+							(x_pattern(x_max, y_max) > cs16[3]))
+						{
+							x_pattern(x_max, y_max) = ES2(eng);
+						}
+					}
+					else
+					{
+						if ((x_pattern(x_max, y_max) < cs16[4]) ||
+							(x_pattern(x_max, y_max) > cs16[5]))
+						{
+							x_pattern(x_max, y_max) = ES3(eng);
+
+						}
+					}
+					break;
 				default:
+					if ((x_pattern(x_max, y_max) < def[0]) ||
+						(x_pattern(x_max, y_max) > def[1]))
+					{
+						x_pattern(x_max, y_max) = DF(eng);
+					}
 					break;
 				}
 			}

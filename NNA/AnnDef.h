@@ -21,6 +21,23 @@ double LoMulD[5] = { 60.0,90.0,1.5,600.0,2.0 };
 double UpMulD[5] = { 80.0,110.0,3.0,1000.0,9.0 };
 double bT[4] = { 1.5,2.0,2.5,3.0 }; //constrains for multiple disk clutch brake design 
 double bF[41] = { 600.0 }; 
+double def[2] = {-10.0,10.0}; 
+//Defenition for problem 12,13,17,18,19,20,22,23,24
+/* -10<x<10	
+	0<x<6	
+	-10<x<10	
+	-10<x<10	
+	0<x<1030	
+	0<x<2	
+	-1<x<2	
+	0<x<6	
+	0<x<10	
+*/
+//case 14 : 13.0<x1<100.0	0<x2<100 
+//case 21 : 0<x1<3	0<x2<4 
+double cs1421[4] = { 13.0,100.0,0,100 };
+double cs15[6] = { 100.0,10000,1000,10000,10,1000 };
+double cs16[6] = { 78.0,102.0,33.0,45.0,27.0,45.0 };
 #define nvars 5
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
