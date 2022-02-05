@@ -288,15 +288,15 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp+sum);
 		break;
-	case 12://problem A.1 ali sadolah
-		temp = std::pow(x(0, 0) - 2.0,2.0);
+	case 12://problem A.1 ali sadolah.fix
+		temp = std::pow(x(0, 0) - 2.0,2.0) + std::pow(x(0, 1) - 1.0, 2.0);
 		c[0] = x(0, 0) - 2.0 * x(0, 1) + 1.0;//equality 
 		c[1] = (std::pow(x(0, 0), 2.0) / 4.0) + std::pow(x(0, 1), 2.0) - 1.0;
 		return (temp + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) + PENALTY*std::pow(c[0], 2.0));
 		break;
-	case 13://problem a3.  
-		temp = std::pow((std::pow(x(0, 0), 2.0) + 
-			std::pow( ( x(0, 1) - 11.0), 2.0) + x(0,0)+std::pow(x(0,1),2.0)-7.0),2.0);
+	case 13://problem a3. .fix 
+		temp = std::pow(std::pow(x(0, 0), 2.0) + x(0, 1) - 11.0, 2.0) 
+			+  std::pow(x(0,0)+std::pow(x(0,1),2.0)-7.0,2.0);
 		c[0] = -4.84 + std::pow(x(0, 0) - 0.05, 2.0) + std::pow(x(0, 1) - 2.5, 2.0);
 		c[1] = -std::pow(x(0, 0), 2.0) - std::pow(x(0, 1) - 2.5, 2.0) + 4.84;
 		for (size_t i = 0; i < 2; i++)
@@ -305,9 +305,9 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 14://problem a5 
+	case 14://problem a5 .fix
 		temp = std::pow(x(0, 0) - 10.0, 3.0) + std::pow(x(0, 1) - 20.0, 3.0);
-		c[0] - std::pow(x(0, 0) - 5.0, 2.0) - std::pow(x(0, 1) - 5.0, 2.0) + 100.0;
+		c[0] = - std::pow(x(0, 0) - 5.0, 2.0) - std::pow(x(0, 1) - 5.0, 2.0) + 100.0;
 		c[1] = std::pow(x(0, 0) - 6.0, 2.0) + std::pow(x(0, 1) - 5.0, 2.0) - 82.81;
 		for (size_t i = 0; i < 2; i++)
 		{
@@ -315,10 +315,46 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 15://a6
-		temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0)+
-			3.0* std::pow(x(0, 3) - 11.0, 2.0)+ 10.0*std::pow(x(0,4),6.0)+7.0*std::pow(x(0,5),2.0)+
-			std::pow(x(0,6),4.0) - 4.0*x(0,5)*x(0,6)-10.0*x(0,5)-8.0*x(0,6);
+	
+	case 15://Quantum seeded evolutionary. problem g10.fix
+		temp = x(0, 0) + x(0, 1) + x(0, 2);
+		c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
+		c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
+		c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
+		c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) + 100 * x(0, 0) - 83333.333;
+		c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1) * x(0, 3) - 1250 * x(0, 3);
+		c[5] = -x(0, 2) * x(0, 7) + 1250000 + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
+		for (size_t i = 0; i < 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 16: //problem a7. sadollah stop problem  set .fix 
+		temp = 5.3578547 * std::pow(x(0, 2), 3.0) + 0.8356891 * x(0, 0) * x(0, 4) +
+			37.293239 * x(0, 0) + 40729.141;
+		c[0] = 85.334407 + 0.0056858 * x(0, 1) * x(0, 4) + 0.0006262 * x(0, 0) * x(0, 3)
+			- 0.0022053 * x(0, 2) * x(0, 4) - 92.0;
+		c[1]  = -85.334407 - 0.0056858 * x(0, 1) * x(0, 4) - 0.0006262 * x(0, 0) * x(0, 3)
+			-0.0022053 * x(0, 2) * x(0, 4) + 92.0;
+		c[2] = 80.51249 + 0.0071317 * x(0, 1) * x(0, 4) + 0.0029955 * x(0, 0) * x(0, 1)
+			+ 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
+		c[3] = -80.51249 - 0.0071317 * x(0, 1) * x(0, 4) - 0.0029955 * x(0, 0) * x(0, 1)
+			- 0.0021813 * std::pow(x(0, 2), 2.0) + 90.0;
+		c[4] = 9.300961 + 0.0047026 * x(0, 2) * x(0, 4) + 0.0012547*x(0, 0) * x(0, 2)
+		+0.0019085*x(0, 2) * x(0, 3) - 25.0;
+		c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2);
+		-0.0019085 * x(0, 2) * x(0, 3) + 20.0;
+		for (size_t i = 0; i < 6; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
+		break;
+	case 17://qiang zhao, two stage multi swarm.fix ptoblm 5 fix 
+		temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0) +
+			3.0 * std::pow(x(0, 3) - 11.0, 2.0) + 10.0 * std::pow(x(0, 4), 6.0) + 7.0 * std::pow(x(0, 5), 2.0) +
+			std::pow(x(0, 6), 4.0) - 4.0 * x(0, 5) * x(0, 6) - 10.0 * x(0, 5) - 8.0 * x(0, 6);
 		c[1] = -127.0 + 2.0 * std::pow(x(0, 0), 2.0) + 3.0 * std::pow(x(0, 1), 4.0) + x(0, 2) + 4.0 * std::pow(x(0, 3), 2.0) +
 			5.0 * x(0, 4);
 		c[2] = -282.0 + 7.0 * x(0, 0) + 3.0 * x(0, 1) + 10.0 * std::pow(x(0, 2), 2.0) + x(0, 3) - x(0, 4);
@@ -331,43 +367,11 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (temp + sum);
 		break;
-	case 16://problem a4:max problem translate to minimization 
-		temp = -std::pow(std::sin(2.0 * M_PI * x(0, 0)), 3.0) * (std::sin(2.0 * M_PI * x(0, 1)))
-			/ std::pow(x(0, 0), 3.0) * (x(0, 0) + x(0, 1)) ;
-		c[0] = std::pow(x(0, 0), 2.0) - x(0, 1) + 1.0;
-		c[1] = 1.0 - x(0, 0) + std::pow(x(0, 1) - 4.0, 2.0);
-		for (size_t i = 0; i < 2; i++)
-		{
-			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return (sum + temp);
-		break;
-	case 17: //problem a7. sadollah stop problem  set 
-		temp = 5.3578547 * std::pow(x(0, 2), 3.0) + 0.8356891 * x(0, 0) * x(0, 4) +
-			37.293239 * x(0, 0) + 40729.141;
-		c[0] = 85.334407 + 0.0056858 * x(0, 1) * x(0, 4) + 0.0006262 * x(0, 0) * x(0, 3)
-			- 0.0022053 * x(0, 2) * x(0, 4) + 92.0;
-		c[1]  = -85.334407 - 0.0056858 * x(0, 1) * x(0, 4) - 0.0006262 * x(0, 0) * x(0, 3)
-			-0.0022053 * x(0, 2) * x(0, 4) + 92.0;
-		c[2] = 80.51249 + 0.0071317 * x(0, 1) * x(0, 4) + 0.0029955 * x(0, 0) * x(0, 1)
-			+ 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
-		c[3] = -80.51249 - 0.0071317 * x(0, 1) * x(0, 4) - 0.0029955 * x(0, 0) * x(0, 1)
-			- 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
-		c[4] = 9.300961 + 0.0047026 * x(0, 2) * x(0, 4) + 0.0012547*x(0, 0) * x(0, 2);
-		+0.0019085*x(0, 2) * x(0, 3) - 25.0;
-		c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2);
-		-0.0019085 * x(0, 2) * x(0, 3) + 25.0;
-		for (size_t i = 0; i < 6; i++)
-		{
-			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return (sum + temp);
-		break;
-	case 18://qiang zhao, two stage multi swarm 
+	case 18://qiang zhao, two stage multi swarm.fix
 		//b03
 		temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) + x(0, 0) * x(0, 1) - 14.0 * x(0, 0) - 16.0 * x(0, 1) +
-			std::pow(x(0, 2) - 10.0, 2.0) + 4.0 * std::pow(x(0, 3) - 10.0, 2.0) + std::pow(x(0, 4) - 3.0, 2.0) +
-			2.0 * std::pow(x(0, 5) - 1.0, 2.0) + 5.0 * std::pow(x(0, 6), 2.0) + 7.0 * std::pow(x(0, 7) - 10.0, 2.0) +
+			std::pow(x(0, 2) - 10.0, 2.0) + 4.0 * std::pow(x(0, 3) - 5.0, 2.0) + std::pow(x(0, 4) - 3.0, 2.0) +
+			2.0 * std::pow(x(0, 5) - 1.0, 2.0) + 5.0 * std::pow(x(0, 6), 2.0) + 7.0 * std::pow(x(0, 7) - 11.0, 2.0) +
 			2.0 * std::pow(x(0, 8) - 10.0, 2.0) + std::pow(x(0, 9) - 7.0, 2.0) + 45.0;
 		c[0] = -105.0 + 4.0 * x(0, 0) + 5.0 * x(0, 1) - 3.0 * x(0, 6) + 9.0 * x(0, 7);
 		c[1] = 10 * x(0, 0) - 8.0 * x(0, 1) - 17.0 * x(0, 6) + 2.0 * x(0, 7);
@@ -383,24 +387,26 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 19://b01 qiang zhao, two stage multi swarm 
-		temp = 3.0 * x(0, 0) + 0.000001 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1) + (0.000002 / 3.0) * std::pow(x(0, 1), 3.0);
+	case 19://b01 qiang zhao, two stage multi swarm ..fix
+		temp = 3.0 * x(0, 0) + 0.000001 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1) 
+			+ (0.000002 / 3.0) * std::pow(x(0, 1), 3.0);
 		c[0] = -x(0, 3) + x(0, 2) - 0.55; //inequality 
 		c[1] = -x(0, 2) + x(0, 3) - 0.55;
 		c[2] = 1000.0 * std::sin(-x(0, 2) - 0.25) + 1000.0 * std::sin(-x(0, 3) - 0.25) + 894.8 - x(0, 0);
 		c[3] = 1000.0 * std::sin(x(0, 2) - 0.25) + 1000.0 * std::sin(x(0, 2)-x(0,3) - 0.25) + 894.8 - x(0, 1);
 		c[4] = 1000.0 * std::sin(x(0, 3) - 0.25) + 1000.0 * std::sin(x(0, 3) - x(0, 2) - 0.25) + 1294.8;
+		c[9] = 0.0;
 		for (size_t i = 0; i < 2; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
-		for (size_t i = 2; i < 4; i++)
+		for (size_t i = 2; i < 5; i++)
 		{
-			sum += PENALTY * std::pow(c[i],2.0);
+			c[9] += PENALTY * std::pow(c[i],2.0);
 		}
-		return	(temp + sum);
+		return	(temp + sum+c[9]);
 		break;
-	case 20://Value - Estimation Function- x.l sun. problem 1
+	case 20://A novel filled function method for solving.qiang li. fix. problem 4.1  
 		temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
 		c[0] = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1), 2.0) - std::pow(1.6, 2.0);
 		c[1] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1) - 3.0, 2.0) - std::pow(2.7, 2.0);
@@ -410,7 +416,14 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 21: // Value - Estimation Function - x.l sun.problem 2
+	case 21://A novel filled function method for solving.qiang li.  problem 4.2   fix.
+		temp = -x(0, 0) - x(0, 1);
+		c[0] = x(0, 1) - 2.0 * std::pow(x(0, 0), 4.0)
+			+ 8.0 * std::pow(x(0, 0), 3.0) - 8.0 * std::pow(x(0, 0), 2.0) - 2.0;
+		c[1] = x(0, 1) - 4.0 * std::pow(x(0, 0), 4.0)
+			+ 32 * std::pow(x(0, 0), 3.0) - 88.0 * std::pow(x(0, 0), 2.0) + 96.0 * x(0, 0) - 36.0;
+		break;
+	case 22: // Value - Estimation Function - x.l sun.problem 2.fix
 		temp = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1) - 1.0, 2.0) +1.0;
 		c[0] = x(0, 0) + x(0, 1) - 2.0;
 		c[1] = std::pow(x(0, 0), 2.0) - x(0, 1);
@@ -420,7 +433,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	case 22://A novel modified BSA, hailong wang, problem 3
+	case 23://A novel modified BSA, hailong wang, problem 3.fix
 		temp = std::pow(std::pow(x(0, 0), 2.0) + x(0, 1) - 11.0, 2.0) + std::pow(std::pow(x(0, 1), 2.0) + x(0, 0) - 7.0, 2.0);
 		c[0] = std::pow(x(0, 0) - 0.05, 2.0) + std::pow(x(0, 1) - 2.5, 2.0) - 4.84;
 		c[1] = -std::pow(x(0, 0), 2.0) - std::pow(x(0, 1) - 2.5, 2.0) + 4.84;
@@ -430,20 +443,18 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break; 
-	case 23://Quantum seeded evolutionary. problem g10
-		temp = x(0, 0) + x(0, 1) + x(0, 2);
-		c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
-		c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
-		c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
-		c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) - 100 * x(0, 0) - 83333.333;
-		c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1)*x(0,3) - 1250*x(0,3);
-		c[5] = -x(0, 2) * x(0, 7) + 1250000  + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
-		for (size_t i = 0; i < 6; i++)
+	case 24://A novel modified BSA, hailong wang, problem 4.fix
+		temp = -std::pow(std::sin(2.0 * M_PI * x(0, 0)), 3.0) * (std::sin(2.0 * M_PI * x(0, 1)))
+			/ std::pow(x(0, 0), 3.0) * (x(0, 0) + x(0, 1));
+		c[0] = std::pow(x(0, 0), 2.0) - x(0, 1) + 1.0;
+		c[1] = 1.0 - x(0, 0) + std::pow(x(0, 1) - 4.0, 2.0);
+		for (size_t i = 0; i < 2; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
 		}
 		return (sum + temp);
 		break;
+	
 	/*case 0:
 		//griewank function 
 		for (size_t i = 0; i < nvars; i++)
