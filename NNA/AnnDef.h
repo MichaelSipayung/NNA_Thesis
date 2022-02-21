@@ -6,7 +6,9 @@
 #include <algorithm>
 #include "AnnImp.cpp"
 #define NPOP 150
-#define MAX  140
+#define MAX  200
+#define nvars 8
+
 double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
 double pressureVes[8] = { 1.0,99.0,1.0,99.0,10.00,200.0,10.0,200.0 };
 double ibeam[8] = { 47.0,51.0,75.0,85.0,0.99,5.0,0.99,5.0 };
@@ -21,7 +23,7 @@ double LoMulD[5] = { 60.0,90.0,1.5,600.0,2.0 };
 double UpMulD[5] = { 80.0,110.0,3.0,1000.0,9.0 };
 double bT[4] = { 1.5,2.0,2.5,3.0 }; //constrains for multiple disk clutch brake design 
 double bF[41] = { 600.0 }; 
-double def[2] = {-10.0,10.0}; 
+double def[2] = {-10,10.0}; 
 //Defenition for problem 12,13,17,18,19,20,22,23,24
 /* -10<x<10	
 	0<x<6	
@@ -38,7 +40,8 @@ double def[2] = {-10.0,10.0};
 double cs1421[4] = { 13.0,100.0,0,100 };
 double cs15[6] = { 100.0,10000,1000,10000,10,1000 };
 double cs16[6] = { 78.0,102.0,33.0,45.0,27.0,45.0 };
-#define nvars 5
+double cs19[6] = { 670.0, 682.0, 1020,1030,-1.0,0.5 };
+
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
 	static void initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::MatrixXd &w,
