@@ -8,8 +8,8 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
-#define KODE 15
-#define FKODE 15
+#define KODE 21
+#define FKODE 21
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
@@ -41,7 +41,8 @@ std::uniform_real_distribution<double> DF(def[0], def[1]),
 CS1(cs1421[0] , cs1421[1]), CS2(cs1421[2], cs1421[3]), 
 DS1(cs15[0], cs15[1]), DS2(cs15[2], cs15[3]), DS3(cs15[4], cs15[5]),
 ES1(cs16[0], cs16[1]), ES2(cs16[2], cs16[3]), ES3(cs16[4], cs16[5]),
-FS1(cs19[0], cs19[1]), FS2(cs19[2], cs19[3]), FS3(cs19[4], cs19[5]);
+FS1(cs19[0], cs19[1]), FS2(cs19[2], cs19[3]), FS3(cs19[4], cs19[5]), 
+GS1(cs21[0], cs21[1]), GS2(cs21[2], cs21[3]);
 
 
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
@@ -63,7 +64,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < 0; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -77,7 +78,29 @@ int main()
 	Eigen::Matrix < double, 1, nvars> x;
 	double c[10];
 	double temp;
-	x << 1507.39, 9999.58, 976.34, 204.702, 460.729, 193.01, 236.71, 561.312;
+	x << 2.32952, 3.17849;
+	temp = -x(0, 0) - x(0, 1);
+	c[0] = x(0, 1) - 2.0 * std::pow(x(0, 0), 4.0)
+		+ 8.0 * std::pow(x(0, 0), 3.0) - 8.0 * std::pow(x(0, 0), 2.0) - 2.0;
+	c[1] = x(0, 1) - 4.0 * std::pow(x(0, 0), 4.0)
+		+ 32 * std::pow(x(0, 0), 3.0) - 88.0 * std::pow(x(0, 0), 2.0) + 96.0 * x(0, 0) - 36.0;
+	std::cout << temp << std::endl;
+	for (size_t i = 0; i < 2; i++)
+	{
+		std::cout << c[i] << std::endl;
+	}
+	/*
+	x << 0.724348, 0.398977;
+	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
+	c[0] = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1), 2.0) - std::pow(1.6, 2.0);
+	c[1] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1) - 3.0, 2.0) - std::pow(2.7, 2.0);
+	std::cout << temp << std::endl;
+	for (size_t i = 0; i < 2; i++)
+	{
+		std::cout << c[i] << std::endl;
+	} */
+
+	/*x << 100.017, 1732.08, 6245.52, 45.0394, 250.345, 106.99, 193.238, 350.334;
 	temp = x(0, 0) + x(0, 1) + x(0, 2);
 	c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
 	c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
@@ -89,7 +112,7 @@ int main()
 	for (size_t i = 0; i < 6; i++)
 	{
 		std::cout << c[i] << std::endl;
-	}
+	} */
 	/* 
 	x << 0.689317 ,0.844659;
 	temp = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1) - 1.0, 2.0);
@@ -546,6 +569,11 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			+ 8.0 * std::pow(x(0, 0), 3.0) - 8.0 * std::pow(x(0, 0), 2.0) - 2.0;
 		c[1] = x(0, 1) - 4.0 * std::pow(x(0, 0), 4.0)
 			+ 32 * std::pow(x(0, 0), 3.0) - 88.0 * std::pow(x(0, 0), 2.0) + 96.0 * x(0, 0) - 36.0;
+		for (size_t i = 0; i < 2; i++)
+		{
+			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
+		}
+		return (sum + temp);
 		break;
 	case 22: // Value - Estimation Function - x.l sun.problem 2.fix
 		temp = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1) - 1.0, 2.0) +1.0;
@@ -938,7 +966,7 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				{
 					x_pattern(i, j) = DS1(eng);
 				}
-				if (j == 1)
+				else if (j == 1|| j==2)
 				{
 					x_pattern(i, j) = DS2(eng);
 				}
@@ -973,6 +1001,16 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 				else
 				{
 					x_pattern(i, j) = FS3(eng);
+				}
+				break;
+			case 21:
+				if (j == 0)
+				{
+					x_pattern(i, j) = GS1(eng);
+				}
+				else
+				{
+					x_pattern(i, j) = GS2(eng);
 				}
 				break;
 			default:	
@@ -1212,7 +1250,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						{
 							x_pattern(i, auxilaryVar) = DS1(eng);
 						}
-						else if (auxilaryVar == 1)
+						else if (auxilaryVar == 1 || auxilaryVar==2)
 						{
 							x_pattern(i, auxilaryVar) = DS2(eng);
 						}
@@ -1247,6 +1285,16 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						else
 						{
 							x_pattern(i, auxilaryVar) = FS3(eng);
+						}
+						break;
+					case 21:
+						if (auxilaryVar == 0)
+						{
+							x_pattern(i, auxilaryVar) = GS1(eng);
+						}
+						else 
+						{
+							x_pattern(i, auxilaryVar) = GS2(eng);
 						}
 						break;
 					default:
@@ -1551,7 +1599,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 							x_pattern(x_max, y_max) = DS1(eng);
 						}
 					}
-					else if (y_max == 1)
+					else if (y_max == 1 ||y_max==2)
 					{
 						if ((x_pattern(x_max, y_max) < cs15[2]) ||
 							(x_pattern(x_max, y_max) > cs15[3]))
@@ -1620,6 +1668,24 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						{
 							x_pattern(x_max, y_max) = FS3(eng);
 
+						}
+					}
+					break;
+				case 21:
+					if (y_max == 0)
+					{
+						if ((x_pattern(x_max, y_max) < cs21[0]) ||
+							(x_pattern(x_max, y_max) > cs21[1]))
+						{
+							x_pattern(x_max, y_max) = GS1(eng);
+						}
+					}
+					else 
+					{
+						if ((x_pattern(x_max, y_max) < cs21[2]) ||
+							(x_pattern(x_max, y_max) > cs21[3]))
+						{
+							x_pattern(x_max, y_max) = GS2(eng);
 						}
 					}
 					break;
