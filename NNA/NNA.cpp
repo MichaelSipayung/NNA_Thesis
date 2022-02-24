@@ -10,12 +10,15 @@
 #include <vector>
 #define KODE 21
 #define FKODE 21
+#define maxSamp  10000000
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
 std::random_device rd; //nondeterminioctic random distribution
 std::default_random_engine eng(rd());
 std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);
+std::uniform_real_distribution<double> boundMonteA(0,M_PI/2.0), boundMonteB(0,1.0);
+
 //std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX), distr1(L1, U1), distr2(L2, U2), distr3(L3, U3), distr4(L4, U4);//random number between 1 and 0
 std::uniform_real_distribution<double>
 d1(LoSpeedRed[0], UpSpeedRed[0]),
@@ -44,9 +47,9 @@ ES1(cs16[0], cs16[1]), ES2(cs16[2], cs16[3]), ES3(cs16[4], cs16[5]),
 FS1(cs19[0], cs19[1]), FS2(cs19[2], cs19[3]), FS3(cs19[4], cs19[5]), 
 GS1(cs21[0], cs21[1]), GS2(cs21[2], cs21[3]);
 
-
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
- 
+double fx(Eigen::Matrix<double,1,2> x);
+
 int main()
 {
 
@@ -74,8 +77,38 @@ int main()
 		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
 	}
 	std::cout << "finish" << std::endl;
+	//monte carlo test 
+	
+	Eigen::MatrixXd  xy(maxSamp,2),z(maxSamp,1), fValue(maxSamp,1);
+	
+	double area = M_PI / 2.0;
+	
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		z(i, 0) = boundMonteA(eng);
+	}
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		xy(i, 0) = z(i,0);
+	}
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		z(i, 0) = boundMonteB(eng);
+	}
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		xy(i, 1) = z(i, 0);
+	}
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		fValue(i, 0) = fx(xy.row(i));
+	}
+	
+	std::cout << "estimate monte carlo for double integral \t: " << M_PI / 2.0 * fValue.mean();
 
-	Eigen::Matrix < double, 1, nvars> x;
+
+
+/*	Eigen::Matrix < double, 1, nvars> x;
 	double c[10];
 	double temp;
 	x << 2.32952, 3.17849;
@@ -89,6 +122,7 @@ int main()
 	{
 		std::cout << c[i] << std::endl;
 	}
+	*/
 	/*
 	x << 0.724348, 0.398977;
 	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
@@ -1762,4 +1796,6 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	//std::cout << target << std::endl;
 	//std::cout << "xtarge \t: " <<x_target << std::endl;
 }
- 
+double fx(Eigen::Matrix<double, 1, 2>x) {
+	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
+}
