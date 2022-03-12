@@ -5,7 +5,7 @@
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 150
+#define NPOP 120
 #define MAX  200
 #define nvars 2
 
@@ -23,7 +23,7 @@ double LoMulD[5] = { 60.0,90.0,1.5,600.0,2.0 };
 double UpMulD[5] = { 80.0,110.0,3.0,1000.0,9.0 };
 double bT[4] = { 1.5,2.0,2.5,3.0 }; //constrains for multiple disk clutch brake design 
 double bF[41] = { 600.0 }; 
-double def[2] = {0,2}; 
+double def[2] = {-600,600 };
 //Defenition for problem 12,13,17,18,19,20,22,23,24
 /* -10<x<10	
 	0<x<6	
@@ -43,7 +43,8 @@ double cs21[4] = { 0,3,0,4 };
 double cs15[6] = { 100.0,10000,1000,10000,10,1000 };
 double cs16[6] = { 78.0,102.0,33.0,45.0,27.0,45.0 };
 double cs19[6] = { 670.0, 682.0, 1020,1030,-1.0,0.5 };
-
+//test case for 2-dimension constraint ... case 29-32
+double cs29_32[4] = { -10.0,0.0,-6.5,0.0 };
 namespace NNA {
 	static double f(Eigen::Matrix<double, 1, nvars>);
 	static void initialization(Eigen::Matrix<double, 1, NPOP>& ww, Eigen::MatrixXd &w,

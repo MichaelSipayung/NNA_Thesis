@@ -8,16 +8,18 @@
 #include <math.h>
 #include <fstream>
 #include <vector>
-#define KODE 21
-#define FKODE 21
-#define maxSamp  10000000
+#include <chrono>
+#define KODE 29
+#define FKODE 29
+#define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
 std::random_device rd; //nondeterminioctic random distribution
 std::default_random_engine eng(rd());
 std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);
-std::uniform_real_distribution<double> boundMonteA(0,M_PI/2.0), boundMonteB(0,1.0);
+//std::uniform_real_distribution<double> boundMonteA(0,M_PI/2.0), boundMonteB(0,1.0);
+std::uniform_real_distribution<double> boundMonteA(0,3), boundMonteB(1,2),monteTripA(0,1);
 
 //std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX), distr1(L1, U1), distr2(L2, U2), distr3(L3, U3), distr4(L4, U4);//random number between 1 and 0
 std::uniform_real_distribution<double>
@@ -46,6 +48,7 @@ DS1(cs15[0], cs15[1]), DS2(cs15[2], cs15[3]), DS3(cs15[4], cs15[5]),
 ES1(cs16[0], cs16[1]), ES2(cs16[2], cs16[3]), ES3(cs16[4], cs16[5]),
 FS1(cs19[0], cs19[1]), FS2(cs19[2], cs19[3]), FS3(cs19[4], cs19[5]), 
 GS1(cs21[0], cs21[1]), GS2(cs21[2], cs21[3]);
+std::uniform_real_distribution<double>CS29_32(cs29_32[0], cs29_32[1]), DS29_32(cs29_32[2], cs29_32[3]);
 
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 double fx(Eigen::Matrix<double,1,2> x);
@@ -67,7 +70,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 0; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -76,9 +79,9 @@ int main()
 		NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
 		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
 	}
-	std::cout << "finish" << std::endl;
+
 	//monte carlo test 
-	
+	/*
 	Eigen::MatrixXd  xy(maxSamp,2),z(maxSamp,1), fValue(maxSamp,1);
 	
 	double area = M_PI / 2.0;
@@ -104,9 +107,44 @@ int main()
 		fValue(i, 0) = fx(xy.row(i));
 	}
 	
-	std::cout << "estimate monte carlo for double integral \t: " << M_PI / 2.0 * fValue.mean();
+	std::cout << "estimate monte carlo for double integral \t: " << M_PI / 2.0 * fValue.mean(); 
+	//std::cout << "estimate monte carlo for double integral \t: " << 3.0 * fValue.mean();
+	*/
+	//estimate triple integral 
+	/*
+	double startT, finishT;
+	startT = clock();
+	double count = 0;
+	int maxIter =maxSamp;
+	Eigen::MatrixXd sample(maxIter, 3);
+	Eigen::MatrixXd temp(maxIter, 1);
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		temp(i, 0) = std::pow(monteTripA(eng),2.0);
+	}
+	sample.col(0) = temp.col(0);
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		temp(i, 0) = std::pow(monteTripA(eng), 2.0);
+	}
+	sample.col(1) = temp.col(0);
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		temp(i, 0) = std::pow(monteTripA(eng), 2.0);
+	}
+	sample.col(2) = temp.col(0);
 
-
+	for (size_t i = 0; i < maxSamp; i++)
+	{
+		if (sample.row(i).sum()<1)
+		{
+			++count;
+		}
+	}
+	finishT = clock();
+	std::cout << "\n estimate monte carlo for triple integral \t: " << count / maxSamp;
+	std::cout << "\nTime\t: " << (finishT - startT)/CLOCKS_PER_SEC << std::endl;
+	
 
 /*	Eigen::Matrix < double, 1, nvars> x;
 	double c[10];
@@ -122,7 +160,8 @@ int main()
 	{
 		std::cout << c[i] << std::endl;
 	}
-	*/
+	
+	* /
 	/*
 	x << 0.724348, 0.398977;
 	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
@@ -832,6 +871,77 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		return sum;
 		break;
 		*/
+	case 25: //schewefel function version 2 
+		temp = 0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			c[0] = x(0, i);
+			temp = temp + c[0]*std::sin(std::sqrt(std::fabs(c[0])));
+		}
+		return (418.9829 * nvars - temp);
+		break;
+	case 26://rastrign function  
+		for (size_t i = 0; i < nvars; i++)
+		{
+			c[0] = x(0, i);
+			temp += std::pow(c[0], 2.0) - 10 * std::cos(2.0 * M_PI * c[0]) + 10.0;
+		}
+		return temp;
+		break;
+	case 27://ackley 
+		c[0] = 0, c[1] = 0,
+			c[2]=0,c[3]=0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp = x(0, i);
+			c[0] += std::pow(temp, 2.0);
+			c[1] += std::cos(2.0 * M_PI * temp);
+		}
+		c[2] = -20 * std::exp(-0.2 * std::sqrt(c[0] / nvars));
+		c[3] = -std::exp(c[1] / nvars);
+		return (c[2] + c[3] + 20 + std::exp(1.0));
+		break;
+	case 28:
+		c[0] = 0, c[1] = 1.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp = x(0, i);
+			c[0] += std::pow(temp, 2.0) / 4000;
+			c[1] *= std::cos(temp / std::sqrt(i + 1));
+		}
+		return (c[0] - c[1] + 1.0);
+		break;
+		//bencmark 2 dimension constraint
+	case 100://rosenbrock 
+		temp = std::pow(1 - x(0, 0), 2.0) + 100 * std::pow(x(0, 1) - x(0, 0) * x(0, 0), 2.0);
+		c[0] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 2.0;
+		return (temp + beta * std::pow(std::max(0.0, c[0]),2.0));
+		break;
+	case 30://rosenbrock 
+		temp = std::pow(1 - x(0, 0), 2.0) + 100 * std::pow(x(0, 1) - x(0, 0) * x(0, 0), 2.0);
+		c[0] = std::pow(x(0, 0) - 1.0, 3.0) - x(0, 1) + 1.0;
+		c[1] = x(0, 0) + x(0, 1) - 2.0;
+		c[2] = 0.0;
+		for (size_t i = 0; i < 2; i++)
+		{
+			c[2] += beta * std::pow(std::max(0.0, c[i]), 2.0);
+		}
+		return (temp + c[2]);
+		break;
+	case 31://simionescu
+		temp = 0.1 * x(0, 0) * x(0, 1);
+		c[0] = std::pow( 1.0 + 0.2 * std::cos(8.0 * std::atan(x(0, 0) / x(0, 1))),2.0);
+		c[1] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - c[0];
+		return (temp + beta * std::pow(std::max(0.0, c[1]), 2.0));
+		break;
+	case 29://mishra's Bird
+		c[0] = std::pow(1.0 - std::cos(x(0, 0)), 2.0);
+		c[1] = std::pow(1.0 - std::sin(x(0, 1)), 2.0);
+		temp = std::sin(x(0, 1)) * std::exp(c[0]) + 
+			std::cos(x(0, 0)) * std::exp(c[1]) + std::pow(x(0, 0) - x(0, 1), 2.0);
+		c[2] = std::pow(x(0, 0) + 5.0, 2.0) + std::pow(x(0, 1) + 5.0, 2.0) - 25.0;
+		return (temp + beta * std::pow(std::max(0.0, c[2]), 2.0));
+		break;
 	default:
 		break;
 	}
@@ -1047,6 +1157,16 @@ void NNA::CreateInitialPopulation(Eigen::Matrix<double, NPOP, nvars>& x_pattern,
 					x_pattern(i, j) = GS2(eng);
 				}
 				break;
+			case 29://case 29-32 constrained 2-dimension 
+				if (j == 0)
+				{
+					x_pattern(i, j) = CS29_32(eng);
+				}
+				else
+				{
+					x_pattern(i, j) = DS29_32(eng);
+				}
+				break;
 			default:	
 				x_pattern(i, j) = DF(eng);
 				break;
@@ -1101,7 +1221,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	int Maximum = 151;
 	int begin = 1;
 	int auxilaryVar = 0;
-	//writeF.open("case17.csv", std::ios::app);
+	writeF.open("case29_32.csv", std::ios::app);
 	while (begin != MAX)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -1329,6 +1449,16 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						else 
 						{
 							x_pattern(i, auxilaryVar) = GS2(eng);
+						}
+						break;
+					case 29://case 29-32-constrained oprimization
+						if (auxilaryVar == 0)
+						{
+							x_pattern(i, auxilaryVar) = CS29_32(eng);
+						}
+						else
+						{
+							x_pattern(i, auxilaryVar) = DS29_32(eng);
 						}
 						break;
 					default:
@@ -1723,6 +1853,24 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 						}
 					}
 					break;
+				case 29://case 29-32 constrained optimization 
+					if (y_max == 0)
+					{
+						if ((x_pattern(x_max, y_max) < cs29_32[0]) ||
+							(x_pattern(x_max, y_max) > cs29_32[1]))
+						{
+							x_pattern(x_max, y_max) = CS29_32(eng);
+						}
+					}
+					else
+					{
+						if ((x_pattern(x_max, y_max) < cs29_32[2]) ||
+							(x_pattern(x_max, y_max) > cs29_32[3]))
+						{
+							x_pattern(x_max, y_max) = CS29_32(eng);
+						}
+					}
+					break;
 				default:
 					if ((x_pattern(x_max, y_max) < def[0]) ||
 						(x_pattern(x_max, y_max) > def[1]))
@@ -1780,22 +1928,25 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop 
-		//writeF << begin << "\t;";
-		/*for (size_t i = 0; i < nvars; i++)
+		writeF << begin << "\t;";
+		for (size_t i = 0; i < nvars; i++)
 		{
 			writeF << x_target(0,i) << "\t;";
 		}
-		writeF << std::endl;*/
-		std::cout << x_target << "\t" << target << std::endl;	
+		writeF << std::endl;
+		//std::cout << target << std::endl;
+
+		//std::cout << x_target << "\t" << target << std::endl;	
 		++begin;
 	}
-	//writeF << std::endl;
-	//writeF.close(); 
-	//std::cout << x_target << std::endl;
+	writeF <<std::endl;
+	writeF.close(); 
+	std::cout << x_target << std::endl;
 
 	//std::cout << target << std::endl;
 	//std::cout << "xtarge \t: " <<x_target << std::endl;
 }
 double fx(Eigen::Matrix<double, 1, 2>x) {
 	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
+	//return (std::pow(x(0, 0), 2.0) * x(0, 1));
 }
