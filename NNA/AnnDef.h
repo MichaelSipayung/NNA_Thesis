@@ -1,11 +1,11 @@
 #ifndef ANN_HEADER
 #define ANN_HEADER
 #include <iostream>
-#include <Eigen/dense>
+#include <eigen3/Eigen/Dense>
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 100
+#define NPOP 120
 #define MAX  300
 #define nvars 4
 

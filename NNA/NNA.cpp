@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <Eigen/dense>
+#include <eigen3/Eigen/Dense>
 #include <random> 
 #include <algorithm>
 #include "AnnDef.h"
@@ -71,7 +71,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 0 ;i++)
+	for (size_t i = 0; i < 18 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -82,22 +82,25 @@ int main()
 	}
 	std::cout << "Finisih ....." << std::endl;
 	Eigen::Matrix<double, 1, nvars> x;
-	x << 0.050000 ,2.041514 ,4.083027 ,120.000000;
+	//x << 0.050000 ,2.041514 ,4.083027 ,120.000000;
+	x<<485.062,     500 ,2.22649 ,    60 ;
+	x<<0.0500272 ,   2.0498 ,  4.08315  , 119.984 ;
+	x<<.0500169 ,  2.04213   ,4.08316  ,     120;
 	double c[10] = { 0.0 }, tempC[10] = { 0.0 };
 	c[0] = 1500, c[1] = 1.8 * std::pow(10, 6.0), c[2] = c[3] = 45.0, c[4] = 240.0, c[5] = 10000;
-	c[6] = std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
+		c[6] = std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
 
-	c[7] = std::sqrt(std::pow(x(0, 3) * std::sin(c[3] * M_PI / 180.0) + x(0, 0), 2.0) +
-		std::pow(x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0), 2.0));
-	c[8] = M_PI * c[0] * std::pow(x(0, 2), 2.0) / 4.0;
-	c[9] = (std::fabs(-x(0, 3) * (x(0, 3) * std::sin(c[3]*M_PI/180.0) + x(0, 0)) + x(0, 0) * (x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0)))) /
-		std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
-	//cosnstraints
-	tempC[0] = c[5] * c[4] * std::cos(c[3]) - c[9] * c[8];
-	tempC[1] = c[5] * (c[4] - x(0, 3)) - c[1];
-	tempC[2] = 1.2 * (c[7] - c[6]) - c[6];
-	tempC[3] = x(0, 2) / 2.0 - x(0, 1);
-	tempC[4] = (1 / 4.0) * M_PI * std::pow(x(0, 2), 2.0) * (c[7] - c[6]);
+		c[7] = std::sqrt(std::pow(x(0, 3) * std::sin(c[3] * M_PI / 180.0) + x(0, 0), 2.0) +
+			std::pow(x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0), 2.0));
+		c[8] = M_PI * c[0] * std::pow(x(0, 2), 2.0) / 4.0;
+		c[9] = (std::fabs(-x(0, 3) * (x(0, 3) * std::sin(c[3] * M_PI / 180.0) + x(0, 0)) + x(0, 0) * (x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0)))) /
+			std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
+		//cosnstraints
+		tempC[0] = c[5] * c[4] * std::cos(c[3] * M_PI / 180.0) - c[9] * c[8];
+		tempC[1] = c[5] * (c[4] - x(0, 3)) - c[1];
+		tempC[2] = 1.2 * (c[7] - c[6]) - c[6];
+		tempC[3] = x(0, 2) / 2.0 - x(0, 1);
+		tempC[4] = (1 / 4.0) * M_PI * std::pow(x(0, 2), 2.0) * (c[7] - c[6]);
 	//x << 3.500000, 0.70000, 17.0000, 7.300000, 7.715320, 3.350215, 5.286654; 
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -1313,7 +1316,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	int Maximum = 400;
 	int begin = 1;
 	int auxilaryVar = 0;
-	//writeF.open("cantileverBeamBest.csv", std::ios::app);
+	writeF.open("pistonBest.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -2034,18 +2037,18 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop . saya baru bisa melapirkan
-		/*writeF << begin << "\t;";
+		//writeF << begin << "\t;";
 		for (size_t i = 0; i < nvars; i++)
 		{
 			writeF << x_target(0,i) << "\t;";
 		}
-		writeF <<std::endl;  */
-		std::cout << x_target << "\t";
-		printf("%.6f\n", target);  
+		writeF <<std::endl;  
+		/*std::cout << x_target << "\t";
+		printf("%.6f\n", target);  */
 		++begin;
 	}
 	//writeF <<"; "<< target << std::endl;
-	//writeF.close(); 
+	writeF.close(); 
 	//std::cout << x_target << std::endl;
 
 	//std::cout << target << std::endl;
