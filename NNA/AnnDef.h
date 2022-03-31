@@ -5,9 +5,9 @@
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 120
+#define NPOP 150
 #define MAX  300
-#define nvars 4
+#define nvars 7
 
 double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
 double pressureVes[8] = { 0.0,99.0,0.0,99.0,10.00,200.0,10.0,200.0 };

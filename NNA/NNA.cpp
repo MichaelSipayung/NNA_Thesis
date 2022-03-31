@@ -10,8 +10,8 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 6
-#define FKODE 6
+#define KODE 4
+#define FKODE 4
 #define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -71,7 +71,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 18 ;i++)
+	for (size_t i = 0; i < 20 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -82,31 +82,9 @@ int main()
 	}
 	std::cout << "Finisih ....." << std::endl;
 	Eigen::Matrix<double, 1, nvars> x;
-	//x << 0.050000 ,2.041514 ,4.083027 ,120.000000;
-	x<<485.062,     500 ,2.22649 ,    60 ;
-	x<<0.0500272 ,   2.0498 ,  4.08315  , 119.984 ;
-	x<<.0500169 ,  2.04213   ,4.08316  ,     120;
-	double c[10] = { 0.0 }, tempC[10] = { 0.0 };
-	c[0] = 1500, c[1] = 1.8 * std::pow(10, 6.0), c[2] = c[3] = 45.0, c[4] = 240.0, c[5] = 10000;
-		c[6] = std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
-
-		c[7] = std::sqrt(std::pow(x(0, 3) * std::sin(c[3] * M_PI / 180.0) + x(0, 0), 2.0) +
-			std::pow(x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0), 2.0));
-		c[8] = M_PI * c[0] * std::pow(x(0, 2), 2.0) / 4.0;
-		c[9] = (std::fabs(-x(0, 3) * (x(0, 3) * std::sin(c[3] * M_PI / 180.0) + x(0, 0)) + x(0, 0) * (x(0, 1) - x(0, 3) * std::cos(c[3] * M_PI / 180.0)))) /
-			std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
-		//cosnstraints
-		tempC[0] = c[5] * c[4] * std::cos(c[3] * M_PI / 180.0) - c[9] * c[8];
-		tempC[1] = c[5] * (c[4] - x(0, 3)) - c[1];
-		tempC[2] = 1.2 * (c[7] - c[6]) - c[6];
-		tempC[3] = x(0, 2) / 2.0 - x(0, 1);
-		tempC[4] = (1 / 4.0) * M_PI * std::pow(x(0, 2), 2.0) * (c[7] - c[6]);
-	//x << 3.500000, 0.70000, 17.0000, 7.300000, 7.715320, 3.350215, 5.286654; 
-	for (size_t i = 0; i < 4; i++)
-	{
-		std::cout << tempC[i] << " ";
-	}
-	std::cout << "\nBest \t:" << tempC[4] << std::endl;
+	
+	
+	
 	//monte carlo test 
 	/*
 	Eigen::MatrixXd  xy(maxSamp,2),z(maxSamp,1), fValue(maxSamp,1);
@@ -344,21 +322,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		//tension/ compression spring design problem 
 		temp = (x(0, 2) + 2.0) * x(0, 1) * std::pow(x(0, 0), 2.0);
 		sum = 0.0;
-		/*sum = 0.0;
-		c[4] = 71785.0 * std::pow(x(0, 0), 4.0);
-		c[5] = std::pow(x(0, 1), 3.0) * x(0, 2);
-
-		c[6] = 4.0 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1);
-		c[7] = 12566.0 * (x(0, 1) * std::pow(x(0, 0), 3.0) - std::pow(x(0, 0), 4.0));
-		c[8] = (1.0 / 5108.0 * std::pow(x(0, 0), 2.0));
-		c[9] = x(0, 0) + x(0, 1);
-		c[10] = 140.45 * x(0, 0);
-		c[11] = std::pow(x(0, 1), 2.0) * x(0, 2);
-
-		c[0] = 1.0 - (c[5] / c[4]);
-		c[1] = (c[6] / c[7]) + c[8] - (1.0);
-		c[2] = 1.0 - (c[10] / c[11]);
-		c[3] = (c[9] / 1.5) - 1.0;*/
+		
 		c[0] = 1 - ((std::pow(x(0,1),3.0)  * x(0,2)) / (71785 * std::pow(x(0,0),4.0) ) );
 		c[1] = (4 * std::pow(x(0, 1), 2.0) - x(0, 0) * x(0, 1)) /
 			(12566 * (x(0, 1) * std::pow(x(0, 0), 3.0) - std::pow(x(0, 0), 4.0))) +
@@ -411,24 +375,6 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		break;
 	case 3:
 		//weldead beam design 
-		/*sum = 0.0;
-		temp = 1.10471 * std::pow(x(0, 0), 2.0) * x(0, 1) + 0.04811 * x(0, 2) * x(0, 3) * (14.0 + x(0, 1));
-		M = P * (L + x(0, 1) / 2.0);
-		R = std::sqrt(0.25 * (std::pow(x(0, 1),2.0) + (x(0, 0) + std::pow(x(0, 2), 2.0))));
-		J = 2.0 * (std::sqrt(2.0) * x(0, 0) * x(0, 1) * (std::pow(x(0, 1),2.0) / 12.0 + 0.25 * std::pow( x(0, 0) + x(0, 2),2.0) ));
-		P_c = (4.013 * E / (6.0 * std::pow(L,2.0))) * x(0, 2) * std::pow(x(0, 3),3.0) * (1.0 - 0.25 * x(0, 2) * std::sqrt(E/G) / L);
-		t1 = P / (std::sqrt(2.0) * x(0, 0) * x(0, 1));
-		t2 = M * R / J;
-		t = std::sqrt(std::pow(t1,2.0)+ t1 * t2 * x(0, 1) / R + std::pow(t2, 2.0) );
-		s = 6.0 * P * L / (x(0, 3) * std::pow(x(0, 2),2.0));
-		d = 4.0 * P * std::pow(L, 3.0) / (E * x(0, 3) * std::pow(x(0, 2), 3.0));
-		c[0] = t - t_max;
-		c[1] = s - s_max;;
-		c[2] = x(0, 0) - x(0, 3);
-		c[3] = 0.10471 * std::pow(x(0, 0), 2.0) + 0.04811 * x(0, 2) * x(0, 3) * (14.0 + x(0, 1)) - 5.0;
-		c[4] = 0.125 - x(0, 0);
-		c[5] = d - d_max;
-		c[6] = P - P_c;*/
 		temp = 1.10471 * std::pow(x(0, 0), 2.0) * x(0, 1) + 0.04811 * x(0, 2) * x(0, 3) * (14.0 + x(0, 1));
 
 		R = std::sqrt((std::pow(x(0,1),2.0)) / 4 + std::pow((x(0,0) + x(0,2)) / 2, 2.0) );
@@ -467,20 +413,20 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 			(3.3333 * std::pow(x(0, 2), 2.0) + 14.9334 * x(0, 2) - 43.0934) -
 			1.508 * x(0, 0) * (std::pow(x(0, 5), 2.0) + std::pow(x(0, 6), 2.0))
 			+ 7.4777 * (std::pow(x(0, 5), 3.0) + std::pow(x(0, 6), 3.0)) +
-			0.7854 * (x(0, 3) * std::pow(x(0, 5), 2.0) + x(0, 4) * std::pow(x(0, 6), 2.0));
-
+			0.7854 * (x(0, 3) * std::pow(x(0, 5), 2.0) + x(0, 4) * std::pow(x(0, 6), 2.0));	
 		c[0] = (27.0 / (x(0, 0) * std::pow(x(0, 1), 2.0) * x(0, 2))) - 1.0;
 		c[1] = (397.5 / (x(0, 0) * std::pow(x(0, 1), 2.0) * std::pow(x(0, 2), 2.0))) - 1.0;
 		c[2] = (1.93 * std::pow(x(0, 3), 3.0) / (x(0, 1) * std::pow(x(0, 5), 4.0) * x(0, 2))) - 1.0;
 		c[3] = (1.93 * std::pow(x(0, 4), 3.0) / (x(0, 1) * std::pow(x(0, 6), 4.0) * x(0, 2))) - 1.0;
-
-		c[4] = (1.0 / 110.0 * std::pow(x(0, 5), 3.0)) * std::sqrt(std::pow(745 * x(0, 3) / 
-			x(0, 1) * x(0, 2), 2.0) + 16.90 * std::pow(10.0,6.0)) - 1.0;
-		c[5] = (1.0 / 85.0 * std::pow(x(0, 6), 3.0)) * std::sqrt(std::pow(745.0 * x(0, 4) / x(0, 1) * x(0, 2), 2.0) +
-			157.5 * std::pow(10.0,6.0)) - 1.0;
+		c[4] =(1.0/ (110.0*std::pow(x(0,5),3.0)) )* 
+			std::sqrt( std::pow( (745.0*x(0,3)) /( x(0,1)*x(0,2)),2.0 ) +16.9*1e6  )-1.0;
+		c[5] =(1.0/ (85.0*std::pow(x(0,6),3.0)) )* 
+			std::sqrt( std::pow( (745.0*x(0,4)) /( x(0,1)*x(0,2)),2.0 ) +157.5*1e6  )-1.0;
 		c[6] = (x(0, 1) * x(0, 2) / 40.0) - 1.0;
-		c[7] = (x(0, 0) / 12.0 * x(0, 1)) - 1.0;
-		c[8] = (5.0 * x(0, 1) / x(0, 0)) - 1.0;
+
+		c[7] = (x(0, 0) / (12.0 * x(0, 1)) ) - 1.0;
+		c[8] = ((5.0 * x(0, 1)) / x(0, 0)) - 1.0;
+
 		c[9] = ((1.5 * x(0, 5) + 1.9) / x(0, 3)) - 1.0;
 		c[10] = ((1.1 * x(0, 6) + 1.9) / x(0, 4)) - 1.0;
 		for (size_t i = 0; i <= 10; i++)
@@ -1313,10 +1259,10 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 400;
+	int Maximum = 350;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("pistonBest.csv", std::ios::app);
+	writeF.open("bestSpeedREDU.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -1583,8 +1529,14 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 				for (size_t p = 0; p < nvars; p++)
 				{
 					//default for real problem 
-
+					if (p==2)
+					{
 						x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
+						x_pattern(i, p) = std::round(x_pattern(i,p));
+					}
+					else{
+						x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
+					}
 					//mix-integer problem 
 
 					//x_pattern(i, p) = std::round(x_pattern(i, p)); //mix integer-gear train,multiple disk
@@ -2044,10 +1996,10 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		}
 		writeF <<std::endl;  
 		/*std::cout << x_target << "\t";
-		printf("%.6f\n", target);  */
+		printf("%.6f\n", target);  */ 
 		++begin;
 	}
-	//writeF <<"; "<< target << std::endl;
+	writeF <<"; "<< target << std::endl;
 	writeF.close(); 
 	//std::cout << x_target << std::endl;
 
