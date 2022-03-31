@@ -10,8 +10,8 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 4
-#define FKODE 4
+#define KODE 17
+#define FKODE 17
 #define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -71,7 +71,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 20 ;i++)
+	for (size_t i = 0; i < 0 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -80,77 +80,26 @@ int main()
 		NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
 		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
 	}
-	std::cout << "Finisih ....." << std::endl;
+	std::cout << "Finish ....." << std::endl;
 	Eigen::Matrix<double, 1, nvars> x;
-	
-	
-	
-	//monte carlo test 
-	/*
-	Eigen::MatrixXd  xy(maxSamp,2),z(maxSamp,1), fValue(maxSamp,1);
-	
-	double area = M_PI / 2.0;
-	
-	for (size_t i = 0; i < maxSamp; i++)
+	x<<2.328315,1.951477,-0.449233,4.365183,-0.634161,1.055263,1.594735;
+	x<<2.325590 ,  1.956380 ,-0.5097450 ,  4.3556100 ,-0.6278970 ,  1.062840   ,1.604150;
+	double temp,c[10]={0.0};
+	temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0) +
+			3.0 * std::pow(x(0, 3) - 11.0, 2.0) + 10.0 * std::pow(x(0, 4), 6.0) + 7.0 * std::pow(x(0, 5), 2.0) +
+			std::pow(x(0, 6), 4.0) - 4.0 * x(0, 5) * x(0, 6) - 10.0 * x(0, 5) - 8.0 * x(0, 6);
+		c[1] = -127.0 + 2.0 * std::pow(x(0, 0), 2.0) + 3.0 * std::pow(x(0, 1), 4.0) + x(0, 2) + 4.0 * std::pow(x(0, 3), 2.0) +
+			5.0 * x(0, 4);
+		c[2] = -282.0 + 7.0 * x(0, 0) + 3.0 * x(0, 1) + 10.0 * std::pow(x(0, 2), 2.0) + x(0, 3) - x(0, 4);
+		c[3] = -196.0 + 23.0 * x(0, 0) + std::pow(x(0, 1), 2.0) + 6.0 * std::pow(x(0, 5), 2.0) - 8.0 * x(0, 6);
+		c[4] = 4.0 * std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 3.0 * x(0, 0) * x(0, 1) +
+			2.0 * std::pow(x(0, 2), 2.0) + 5.0 * x(0, 5) - 11.0 * x(0, 6);
+	printf("Best \t: %.8f\n" , temp);
+	for (size_t i = 1; i <5 ; i++)
 	{
-		z(i, 0) = boundMonteA(eng);
+		std::cout<<"  " << c[i];
 	}
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		xy(i, 0) = z(i,0);
-	}
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		z(i, 0) = boundMonteB(eng);
-	}
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		xy(i, 1) = z(i, 0);
-	}
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		fValue(i, 0) = fx(xy.row(i));
-	}
-	
-	std::cout << "estimate monte carlo for double integral \t: " << M_PI / 2.0 * fValue.mean(); 
-	//std::cout << "estimate monte carlo for double integral \t: " << 3.0 * fValue.mean();
-	*/
-	//estimate triple integral 
-	/*
-	double startT, finishT;
-	startT = clock();
-	double count = 0;
-	int maxIter =maxSamp;
-	Eigen::MatrixXd sample(maxIter, 3);
-	Eigen::MatrixXd temp(maxIter, 1);
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		temp(i, 0) = std::pow(monteTripA(eng),2.0);
-	}
-	sample.col(0) = temp.col(0);
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		temp(i, 0) = std::pow(monteTripA(eng), 2.0);
-	}
-	sample.col(1) = temp.col(0);
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		temp(i, 0) = std::pow(monteTripA(eng), 2.0);
-	}
-	sample.col(2) = temp.col(0);
-
-	for (size_t i = 0; i < maxSamp; i++)
-	{
-		if (sample.row(i).sum()<1)
-		{
-			++count;
-		}
-	}
-	finishT = clock();
-	std::cout << "\n estimate monte carlo for triple integral \t: " << count / maxSamp;
-	std::cout << "\nTime\t: " << (finishT - startT)/CLOCKS_PER_SEC << std::endl;
-	
-
+	std::cout<<std::endl;
 /*	Eigen::Matrix < double, 1, nvars> x;
 	double c[10];
 	double temp;
@@ -290,7 +239,7 @@ int main()
 		std::cout << c[i] << std::endl;
 	} */
 
-
+	return 0;
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	double PENALTY = std::pow(10, 15.0);
@@ -463,21 +412,6 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		return (temp + sum);
 		break;
 	case 6:
-		//piston lever
-		/*temp = 9.8 * x(0, 0) * x(0, 1) + 2.0 * x(0, 0);
-		c[0] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0);
-
-		c[1] = (2500 / M_PI * x(0, 0) * x(0, 1) * 500.0) - 1.0;
-		c[2] = (8.0 * 2500 * std::pow(250.0, 2.0) / (std::pow(M_PI, 3.0) * 0.85 * 106 * x(0, 0) * x(0, 1) * c[0])) - 1.0;
-		c[3] = 2.0 / x(0, 0) - 1.0;
-		c[4] = x(0, 0) / 14.0 - 1.0;
-		c[5] = 0.2 / x(0, 1) - 1.0;
-		c[6] = x(0, 1) / 0.8 - 1.0;
-		for (size_t i = 1; i < 7; i++)
-		{
-			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return (temp + sum);*/
 		c[0] = 1500, c[1] = 1.8 * std::pow(10, 6.0), c[2] = c[3] = 45.0, c[4] = 240.0, c[5] = 10000;
 		c[6] = std::sqrt(std::pow(x(0, 3) - x(0, 1), 2.0) + std::pow(x(0, 0), 2.0));
 
@@ -1259,10 +1193,10 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 350;
+	int Maximum = 5000;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("bestSpeedREDU.csv", std::ios::app);
+	//writeF.open("problem2Thesis.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -1529,17 +1463,9 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 				for (size_t p = 0; p < nvars; p++)
 				{
 					//default for real problem 
-					if (p==2)
-					{
-						x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
-						x_pattern(i, p) = std::round(x_pattern(i,p));
-					}
-					else{
-						x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
-					}
+					x_pattern(i, p) = x_pattern(i, p) + (2.0 * distr(eng)) * (x_target(0, p) - x_pattern(i, p));
+					
 					//mix-integer problem 
-
-					//x_pattern(i, p) = std::round(x_pattern(i, p)); //mix integer-gear train,multiple disk
 				}
 			}
 			//return x_pattern, which is satisfy the restriction. stop 
@@ -1989,22 +1915,15 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop . saya baru bisa melapirkan
-		//writeF << begin << "\t;";
-		for (size_t i = 0; i < nvars; i++)
-		{
-			writeF << x_target(0,i) << "\t;";
-		}
-		writeF <<std::endl;  
-		/*std::cout << x_target << "\t";
-		printf("%.6f\n", target);  */ 
+		//writeF << begin<<";"<< target << "\n";
+
+		//std::cout <<x_target << "\t";
+		printf("%.6f\n", target);  
 		++begin;
 	}
-	writeF <<"; "<< target << std::endl;
-	writeF.close(); 
-	//std::cout << x_target << std::endl;
-
-	//std::cout << target << std::endl;
-	//std::cout << "xtarge \t: " <<x_target << std::endl;
+	std::cout<<x_target<<std::endl;
+	//writeF <<x_target << std::endl;
+	//writeF.close(); 
 }
 double fx(Eigen::Matrix<double, 1, 2>x) {
 	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
