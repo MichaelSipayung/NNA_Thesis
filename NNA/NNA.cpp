@@ -10,8 +10,8 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 18
-#define FKODE 18
+#define KODE 15
+#define FKODE 15
 #define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -81,26 +81,21 @@ int main()
 		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
 	}
 	std::cout << "Finish ....." << std::endl;
+	double temp=0.0, c[10]={0.0};
 	Eigen::Matrix<double, 1, nvars> x;
-	x<<2.171996,2.363683,8.773926,5.095984,0.9906548,1.430574,1.321644,9.828726,8.280092,8.375927;
-	double temp, c[10]={0.0};
-	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) + x(0, 0) * x(0, 1) - 14.0 * x(0, 0) - 16.0 * x(0, 1) +
-			std::pow(x(0, 2) - 10.0, 2.0) + 4.0 * std::pow(x(0, 3) - 5.0, 2.0) + std::pow(x(0, 4) - 3.0, 2.0) +
-			2.0 * std::pow(x(0, 5) - 1.0, 2.0) + 5.0 * std::pow(x(0, 6), 2.0) + 7.0 * std::pow(x(0, 7) - 11.0, 2.0) +
-			2.0 * std::pow(x(0, 8) - 10.0, 2.0) + std::pow(x(0, 9) - 7.0, 2.0) + 45.0;
-		c[0] = -105.0 + 4.0 * x(0, 0) + 5.0 * x(0, 1) - 3.0 * x(0, 6) + 9.0 * x(0, 7);
-		c[1] = 10 * x(0, 0) - 8.0 * x(0, 1) - 17.0 * x(0, 6) + 2.0 * x(0, 7);
-		c[2] = -8.0 * x(0, 0) + 2.0 * x(0, 1) + 5.0 * x(0, 8) - 2.0 * x(0, 9) - 12.0;
-		c[3] = 3.0 * std::pow(x(0, 0) - 2.0, 2.0) + 4.0 * std::pow(x(0, 1) - 3.0, 2.0) + 2.0 * std::pow(x(0, 2), 2.0) - 7.0 * x(0, 3)-120.0;
-		c[4] = 5.0 * std::pow(x(0, 0), 2.0) + 8.0 * x(0, 1) + std::pow(x(0, 2) - 6.0, 2.0) - 2.0 * x(0, 3) - 40.0;
-		c[5] = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1) - 2.0, 2.0) - 2.0 * x(0, 0) * x(0, 1) + 14.0 * x(0, 4) - 6.0 * x(0, 5);
-		c[6] = 0.5 * std::pow(x(0, 0) - 8.0, 2.0) + 2.0 * std::pow(x(0, 1) - 4.0, 2.0) + 3.0 * std::pow(x(0, 4), 2.0) - x(0, 5) - 30.0;
-		c[7] = -3.0 * x(0, 0) + 6.0 * x(0, 1) + 12.0 * std::pow(x(0, 8) - 8.0, 2.0) - 7.0 * x(0, 9);
-	for (size_t i = 0; i < 8; i++)
+	x<<579.3167, 1359.943,5110.071,182.0174,295.5985,217.9799,286.4162,395.5979;
+	temp = x(0, 0) + x(0, 1) + x(0, 2);
+		c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
+		c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
+		c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
+		c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) + 100 * x(0, 0) - 83333.333;
+		c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1) * x(0, 3) - 1250 * x(0, 3);
+		c[5] = -x(0, 2) * x(0, 7) + 1250000 + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
+	for (size_t i = 0; i < 6; i++)
 	{
-		std::cout<<"  "<<c[i];
+		std::cout<<c[i] <<"  ";
 	}
-	printf("\nbest%.7f\n ", temp);
+	std::cout<<"\n best \t:" <<temp;
 	return 0;
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
@@ -1060,7 +1055,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 	int Maximum = 500;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("problem4Thesis.csv", std::ios::app);
+	writeF.open("problem5Thesis.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 

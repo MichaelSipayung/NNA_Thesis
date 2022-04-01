@@ -5,9 +5,9 @@
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 165
+#define NPOP 150
 #define MAX  300
-#define nvars 10
+#define nvars 8
 
 double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
 double pressureVes[8] = { 0.0,99.0,0.0,99.0,10.00,200.0,10.0,200.0 };
@@ -40,7 +40,7 @@ double def[2] = {-10.0,10.0 };
 double cs1421[4] = { 0,3,0,4 };
 double cs21[4] = { 0,3,0,4 };
 
-double cs15[6] = { 100.0,10000,1000,10000,10,1000 };
+double cs15[6] = { 100.0,10000.0,1000.0,10000.0,10.0,1000.0 };
 double cs16[6] = { 78.0,102.0,33.0,45.0,27.0,45.0 };
 double cs19[6] = { 0.0, 1200.0, 0.0,1200.0,-0.55,0.55 };
 //test case for 2-dimension constraint ... case 29-32
