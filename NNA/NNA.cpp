@@ -10,8 +10,8 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 17
-#define FKODE 17
+#define KODE 18
+#define FKODE 18
 #define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -71,7 +71,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 0 ;i++)
+	for (size_t i = 0; i < 19 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -82,163 +82,25 @@ int main()
 	}
 	std::cout << "Finish ....." << std::endl;
 	Eigen::Matrix<double, 1, nvars> x;
-	x<<2.328315,1.951477,-0.449233,4.365183,-0.634161,1.055263,1.594735;
-	x<<2.325590 ,  1.956380 ,-0.5097450 ,  4.3556100 ,-0.6278970 ,  1.062840   ,1.604150;
-	double temp,c[10]={0.0};
-	temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0) +
-			3.0 * std::pow(x(0, 3) - 11.0, 2.0) + 10.0 * std::pow(x(0, 4), 6.0) + 7.0 * std::pow(x(0, 5), 2.0) +
-			std::pow(x(0, 6), 4.0) - 4.0 * x(0, 5) * x(0, 6) - 10.0 * x(0, 5) - 8.0 * x(0, 6);
-		c[1] = -127.0 + 2.0 * std::pow(x(0, 0), 2.0) + 3.0 * std::pow(x(0, 1), 4.0) + x(0, 2) + 4.0 * std::pow(x(0, 3), 2.0) +
-			5.0 * x(0, 4);
-		c[2] = -282.0 + 7.0 * x(0, 0) + 3.0 * x(0, 1) + 10.0 * std::pow(x(0, 2), 2.0) + x(0, 3) - x(0, 4);
-		c[3] = -196.0 + 23.0 * x(0, 0) + std::pow(x(0, 1), 2.0) + 6.0 * std::pow(x(0, 5), 2.0) - 8.0 * x(0, 6);
-		c[4] = 4.0 * std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 3.0 * x(0, 0) * x(0, 1) +
-			2.0 * std::pow(x(0, 2), 2.0) + 5.0 * x(0, 5) - 11.0 * x(0, 6);
-	printf("Best \t: %.8f\n" , temp);
-	for (size_t i = 1; i <5 ; i++)
-	{
-		std::cout<<"  " << c[i];
-	}
-	std::cout<<std::endl;
-/*	Eigen::Matrix < double, 1, nvars> x;
-	double c[10];
-	double temp;
-	x << 2.32952, 3.17849;
-	temp = -x(0, 0) - x(0, 1);
-	c[0] = x(0, 1) - 2.0 * std::pow(x(0, 0), 4.0)
-		+ 8.0 * std::pow(x(0, 0), 3.0) - 8.0 * std::pow(x(0, 0), 2.0) - 2.0;
-	c[1] = x(0, 1) - 4.0 * std::pow(x(0, 0), 4.0)
-		+ 32 * std::pow(x(0, 0), 3.0) - 88.0 * std::pow(x(0, 0), 2.0) + 96.0 * x(0, 0) - 36.0;
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 2; i++)
-	{
-		std::cout << c[i] << std::endl;
-	}
-	
-	* /
-	/*
-	x << 0.724348, 0.398977;
-	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - std::cos(17.0 * x(0, 0)) - std::cos(17.0 * x(0, 1)) + 3.0;
-	c[0] = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1), 2.0) - std::pow(1.6, 2.0);
-	c[1] = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1) - 3.0, 2.0) - std::pow(2.7, 2.0);
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 2; i++)
-	{
-		std::cout << c[i] << std::endl;
-	} */
-
-	/*x << 100.017, 1732.08, 6245.52, 45.0394, 250.345, 106.99, 193.238, 350.334;
-	temp = x(0, 0) + x(0, 1) + x(0, 2);
-	c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
-	c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
-	c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
-	c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) + 100 * x(0, 0) - 83333.333;
-	c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1) * x(0, 3) - 1250 * x(0, 3);
-	c[5] = -x(0, 2) * x(0, 7) + 1250000 + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 6; i++)
-	{
-		std::cout << c[i] << std::endl;
-	} */
-	/* 
-	x << 0.689317 ,0.844659;
-	temp = std::pow(x(0, 0) - 2.0, 2.0) + std::pow(x(0, 1) - 1.0, 2.0);
-	c[0] = x(0, 0) - 2.0 * x(0, 1) + 1.0;//equality 
-	c[1] = (std::pow(x(0, 0), 2.0) / 4.0) + std::pow(x(0, 1), 2.0) - 1.0;
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 2; i++)
-	{
-		std::cout << c[i] << std::endl;
-	}*/
-
-	/*
-	x << 1.98115 , 2.59376 , 8.91235 , 5.65081, 0.923705 , 1.21431  ,1.08751 , 9.70767  ,7.61723 , 7.71233;
+	x<<2.171996,2.363683,8.773926,5.095984,0.9906548,1.430574,1.321644,9.828726,8.280092,8.375927;
+	double temp, c[10]={0.0};
 	temp = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) + x(0, 0) * x(0, 1) - 14.0 * x(0, 0) - 16.0 * x(0, 1) +
-		std::pow(x(0, 2) - 10.0, 2.0) + 4.0 * std::pow(x(0, 3) - 5.0, 2.0) + std::pow(x(0, 4) - 3.0, 2.0) +
-		2.0 * std::pow(x(0, 5) - 1.0, 2.0) + 5.0 * std::pow(x(0, 6), 2.0) + 7.0 * std::pow(x(0, 7) - 11.0, 2.0) +
-		2.0 * std::pow(x(0, 8) - 10.0, 2.0) + std::pow(x(0, 9) - 7.0, 2.0) + 45.0;
-	c[0] = -105.0 + 4.0 * x(0, 0) + 5.0 * x(0, 1) - 3.0 * x(0, 6) + 9.0 * x(0, 7);
-	c[1] = 10 * x(0, 0) - 8.0 * x(0, 1) - 17.0 * x(0, 6) + 2.0 * x(0, 7);
-	c[2] = -8.0 * x(0, 0) + 2.0 * x(0, 1) + 5.0 * x(0, 8) - 2.0 * x(0, 9) - 12.0;
-	c[3] = 3.0 * std::pow(x(0, 0) - 2.0, 2.0) + 4.0 * std::pow(x(0, 1) - 3.0, 2.0) + 2.0 * std::pow(x(0, 2), 2.0) - 7.0 * x(0, 3) - 120.0;
-	c[4] = 5.0 * std::pow(x(0, 0), 2.0) + 8.0 * x(0, 1) + std::pow(x(0, 2) - 6.0, 2.0) - 2.0 * x(0, 3) - 40.0;
-	c[5] = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1) - 2.0, 2.0) - 2.0 * x(0, 0) * x(0, 1) + 14.0 * x(0, 4) - 6.0 * x(0, 5);
-	c[6] = 0.5 * std::pow(x(0, 0) - 8.0, 2.0) + 2.0 * std::pow(x(0, 1) - 4.0, 2.0) + 3.0 * std::pow(x(0, 4), 2.0) - x(0, 5) - 30.0;
-	c[7] = -3.0 * x(0, 0) + 6.0 * x(0, 1) + 12.0 * std::pow(x(0, 8) - 8.0, 2.0) - 7.0 * x(0, 9);
-
-	std::cout << temp << std::endl;
+			std::pow(x(0, 2) - 10.0, 2.0) + 4.0 * std::pow(x(0, 3) - 5.0, 2.0) + std::pow(x(0, 4) - 3.0, 2.0) +
+			2.0 * std::pow(x(0, 5) - 1.0, 2.0) + 5.0 * std::pow(x(0, 6), 2.0) + 7.0 * std::pow(x(0, 7) - 11.0, 2.0) +
+			2.0 * std::pow(x(0, 8) - 10.0, 2.0) + std::pow(x(0, 9) - 7.0, 2.0) + 45.0;
+		c[0] = -105.0 + 4.0 * x(0, 0) + 5.0 * x(0, 1) - 3.0 * x(0, 6) + 9.0 * x(0, 7);
+		c[1] = 10 * x(0, 0) - 8.0 * x(0, 1) - 17.0 * x(0, 6) + 2.0 * x(0, 7);
+		c[2] = -8.0 * x(0, 0) + 2.0 * x(0, 1) + 5.0 * x(0, 8) - 2.0 * x(0, 9) - 12.0;
+		c[3] = 3.0 * std::pow(x(0, 0) - 2.0, 2.0) + 4.0 * std::pow(x(0, 1) - 3.0, 2.0) + 2.0 * std::pow(x(0, 2), 2.0) - 7.0 * x(0, 3)-120.0;
+		c[4] = 5.0 * std::pow(x(0, 0), 2.0) + 8.0 * x(0, 1) + std::pow(x(0, 2) - 6.0, 2.0) - 2.0 * x(0, 3) - 40.0;
+		c[5] = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1) - 2.0, 2.0) - 2.0 * x(0, 0) * x(0, 1) + 14.0 * x(0, 4) - 6.0 * x(0, 5);
+		c[6] = 0.5 * std::pow(x(0, 0) - 8.0, 2.0) + 2.0 * std::pow(x(0, 1) - 4.0, 2.0) + 3.0 * std::pow(x(0, 4), 2.0) - x(0, 5) - 30.0;
+		c[7] = -3.0 * x(0, 0) + 6.0 * x(0, 1) + 12.0 * std::pow(x(0, 8) - 8.0, 2.0) - 7.0 * x(0, 9);
 	for (size_t i = 0; i < 8; i++)
 	{
-		std::cout << c[i] << std::endl;
+		std::cout<<"  "<<c[i];
 	}
-	*/
-	/*
-	x << 676.219, 1030, 0.121521, -0.394958;
-	temp = 3.0 * x(0, 0) + 0.000001 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1)
-		+ (0.000002 / 3.0) * std::pow(x(0, 1), 3.0);
-	c[0] = -x(0, 3) + x(0, 2) - 0.55; //inequality 
-	c[1] = -x(0, 2) + x(0, 3) - 0.55;
-	c[2] = 1000.0 * std::sin(-x(0, 2) - 0.25) + 1000.0 * std::sin(-x(0, 3) - 0.25) + 894.8 - x(0, 0);
-	c[3] = 1000.0 * std::sin(x(0, 2) - 0.25) + 1000.0 * std::sin(x(0, 2) - x(0, 3) - 0.25) + 894.8 - x(0, 1);
-	c[4] = 1000.0 * std::sin(x(0, 3) - 0.25) + 1000.0 * std::sin(x(0, 3) - x(0, 2) - 0.25) + 1294.8;
-	x << 853.217, 847.062 ,666.016, 646.713;
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 5; i++)
-	{
-		std::cout << c[i] << std::endl;
-	}
-	*/
-	/*
-	x << 2.24678 ,2.38107;
-	temp = std::pow(std::pow(x(0, 0), 2.0) + x(0, 1) - 11.0, 2.0) + std::pow(std::pow(x(0, 1), 2.0) + x(0, 0) - 7.0, 2.0);
-	c[0] = std::pow(x(0, 0) - 0.05, 2.0) + std::pow(x(0, 1) - 2.5, 2.0) - 4.84;
-	c[1] = -std::pow(x(0, 0), 2.0) - std::pow(x(0, 1) - 2.5, 2.0) + 4.84;
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 2; i++)
-	{
-		std::cout << c[i] << std::endl;
-	}
-	*/
-	/*
-	x << 2.15726 ,  1.96219, - 0.65946,   4.38907 ,- 0.635137   ,1.11285  , 1.47276;
-	double temp = std::pow(x(0, 0) - 10.0, 2.0) + 5.0 * std::pow(x(0, 1) - 12.0, 2.0) + std::pow(x(0, 2), 4.0) +
-		3.0 * std::pow(x(0, 3) - 11.0, 2.0) + 10.0 * std::pow(x(0, 4), 6.0) + 7.0 * std::pow(x(0, 5), 2.0) +
-		std::pow(x(0, 6), 4.0) - 4.0 * x(0, 5) * x(0, 6) - 10.0 * x(0, 5) - 8.0 * x(0, 6);
-	c[1] = -127.0 + 2.0 * std::pow(x(0, 0), 2.0) + 3.0 * std::pow(x(0, 1), 4.0) + x(0, 2) + 4.0 * std::pow(x(0, 3), 2.0) +
-		5.0 * x(0, 4);
-	c[2] = -282.0 + 7.0 * x(0, 0) + 3.0 * x(0, 1) + 10.0 * std::pow(x(0, 2), 2.0) + x(0, 3) - x(0, 4);
-	c[3] = -196.0 + 23.0 * x(0, 0) + std::pow(x(0, 1), 2.0) + 6.0 * std::pow(x(0, 5), 2.0) - 8.0 * x(0, 6);
-	c[4] = 4.0 * std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 3.0 * x(0, 0) * x(0, 1) +
-		2.0 * std::pow(x(0, 2), 2.0) + 5.0 * x(0, 5) - 11.0 * x(0, 6);
-	std::cout << temp << std::endl;
-
-	for (size_t i = 1; i < 5; i++)
-	{
-		std::cout << c[i] << std::endl;
-	}
-	*/
-
-	/* << 78.0221, 35.0661, 31.3669, 44.989, 33.4575;
-	double temp = 5.3578547 * std::pow(x(0, 2), 2.0) + 0.8356891 * x(0, 0) * x(0, 4) +
-		37.293239 * x(0, 0) - 40729.141;
-	c[0] = 85.334407 + 0.0056858 * x(0, 1) * x(0, 4) + 0.0006262 * x(0, 0) * x(0, 3)
-		- 0.0022053 * x(0, 2) * x(0, 4) - 92.0;
-	c[1] = -85.334407 - 0.0056858 * x(0, 1) * x(0, 4) - 0.0006262 * x(0, 0) * x(0, 3)
-		- 0.0022053 * x(0, 2) * x(0, 4) + 92.0;
-	c[2] = 80.51249 + 0.0071317 * x(0, 1) * x(0, 4) + 0.0029955 * x(0, 0) * x(0, 1)
-		+ 0.0021813 * std::pow(x(0, 2), 2.0) - 110.0;
-	c[3] = -80.51249 - 0.0071317 * x(0, 1) * x(0, 4) - 0.0029955 * x(0, 0) * x(0, 1)
-		- 0.0021813 * std::pow(x(0, 2), 2.0) + 90.0;
-	c[4] = 9.300961 + 0.0047026 * x(0, 2) * x(0, 4) + 0.0012547 * x(0, 0) * x(0, 2)
-		+ 0.0019085 * x(0, 2) * x(0, 3) - 25.0;
-	c[5] = -9.300961 - 0.0047026 * x(0, 2) * x(0, 4) - 0.0012547 * x(0, 0) * x(0, 2)
-		- 0.0019085 * x(0, 2) * x(0, 3) + 20.0;
-	std::cout << temp << std::endl;
-	for (size_t i = 0; i < 6; i++)
-	{
-		std::cout << c[i] << std::endl;
-	} */
-
+	printf("\nbest%.7f\n ", temp);
 	return 0;
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
@@ -573,6 +435,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		c[5] = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1) - 2.0, 2.0) - 2.0 * x(0, 0) * x(0, 1) + 14.0 * x(0, 4) - 6.0 * x(0, 5);
 		c[6] = 0.5 * std::pow(x(0, 0) - 8.0, 2.0) + 2.0 * std::pow(x(0, 1) - 4.0, 2.0) + 3.0 * std::pow(x(0, 4), 2.0) - x(0, 5) - 30.0;
 		c[7] = -3.0 * x(0, 0) + 6.0 * x(0, 1) + 12.0 * std::pow(x(0, 8) - 8.0, 2.0) - 7.0 * x(0, 9);
+		sum=0.0;
 		for (size_t i = 0; i < 8; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
@@ -580,14 +443,15 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		return (sum + temp);
 		break;
 	case 19://b01 qiang zhao, two stage multi swarm ..fix
-		temp = 3.0 * x(0, 0) + 0.000001 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1) 
-			+ (0.000002 / 3.0) * std::pow(x(0, 1), 3.0);
+		temp = 3.0 * x(0, 0) + 0.0000010 * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 1) 
+			+ (0.0000020 / 3.0) * std::pow(x(0, 1), 3.0);
 		c[0] = -x(0, 3) + x(0, 2) - 0.55; //inequality 
 		c[1] = -x(0, 2) + x(0, 3) - 0.55;
 		c[2] = 1000.0 * std::sin(-x(0, 2) - 0.25) + 1000.0 * std::sin(-x(0, 3) - 0.25) + 894.8 - x(0, 0);
 		c[3] = 1000.0 * std::sin(x(0, 2) - 0.25) + 1000.0 * std::sin(x(0, 2)-x(0,3) - 0.25) + 894.8 - x(0, 1);
 		c[4] = 1000.0 * std::sin(x(0, 3) - 0.25) + 1000.0 * std::sin(x(0, 3) - x(0, 2) - 0.25) + 1294.8;
 		c[9] = 0.0;
+		sum=0.0;
 		for (size_t i = 0; i < 2; i++)
 		{
 			sum += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
@@ -1193,10 +1057,10 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 5000;
+	int Maximum = 500;
 	int begin = 1;
 	int auxilaryVar = 0;
-	//writeF.open("problem2Thesis.csv", std::ios::app);
+	writeF.open("problem4Thesis.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -1915,15 +1779,15 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop . saya baru bisa melapirkan
-		//writeF << begin<<";"<< target << "\n";
+		writeF << begin<<";"<< target << "\n";
 
 		//std::cout <<x_target << "\t";
-		printf("%.6f\n", target);  
+		//printf("%.6f\n", target);  
 		++begin;
 	}
-	std::cout<<x_target<<std::endl;
-	//writeF <<x_target << std::endl;
-	//writeF.close(); 
+	//std::cout<<x_target<<std::endl;
+	writeF <<x_target << std::endl;
+	writeF.close(); 
 }
 double fx(Eigen::Matrix<double, 1, 2>x) {
 	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
