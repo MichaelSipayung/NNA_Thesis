@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <random> 
 #include <algorithm>
 #include "AnnDef.h"
@@ -10,8 +10,8 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 15
-#define FKODE 15
+#define KODE 32
+#define FKODE 32
 #define maxSamp  1500//case monte carlo
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
@@ -56,7 +56,6 @@ double fx(Eigen::Matrix<double,1,2> x);
 
 int main()
 {
-
 	Eigen::Matrix<double, NPOP, 1>  cost;
 	Eigen::Matrix<double, NPOP, nvars> x_pattern, x_new;
 	Eigen::Matrix<double, 1, NPOP> ww;
@@ -71,7 +70,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 19 ;i++)
+	for (size_t i = 0; i < 1 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -83,19 +82,6 @@ int main()
 	std::cout << "Finish ....." << std::endl;
 	double temp=0.0, c[10]={0.0};
 	Eigen::Matrix<double, 1, nvars> x;
-	x<<579.3167, 1359.943,5110.071,182.0174,295.5985,217.9799,286.4162,395.5979;
-	temp = x(0, 0) + x(0, 1) + x(0, 2);
-		c[0] = -1.0 + 0.0025 * (x(0, 3) + x(0, 5));
-		c[1] = -1.0 + 0.0025 * (x(0, 4) + x(0, 6) - x(0, 3));
-		c[2] = -1 + 0.01 * (x(0, 7) - x(0, 4));
-		c[3] = -x(0, 0) * x(0, 5) + 833.33252 * x(0, 3) + 100 * x(0, 0) - 83333.333;
-		c[4] = -x(0, 1) * x(0, 6) + 1250 * x(0, 4) + x(0, 1) * x(0, 3) - 1250 * x(0, 3);
-		c[5] = -x(0, 2) * x(0, 7) + 1250000 + x(0, 2) * x(0, 4) - 2500 * x(0, 4);
-	for (size_t i = 0; i < 6; i++)
-	{
-		std::cout<<c[i] <<"  ";
-	}
-	std::cout<<"\n best \t:" <<temp;
 	return 0;
 }
 double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
@@ -742,6 +728,14 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (c[0] - c[1] + 1.0);
 		break;
+	case 32:
+		temp=0.0;
+		for (size_t i = 1; i < nvars; i++)
+		{
+			temp+=100.0*(std::pow(x(0,i)-std::pow(x(0,i-1),2.0),2.0))+std::pow(x(0,i-1),2.0);
+		}
+		return (temp);
+		break;
 		//bencmark 2 dimension constraint
 	case 100://rosenbrock 
 		temp = std::pow(1 - x(0, 0), 2.0) + 100 * std::pow(x(0, 1) - x(0, 0) * x(0, 0), 2.0);
@@ -1052,10 +1046,10 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 500;
+	int Maximum = 2000;
 	int begin = 1;
 	int auxilaryVar = 0;
-	writeF.open("problem5Thesis.csv", std::ios::app);
+	//writeF.open("rosenBrock.csv", std::ios::app);
 	while (begin != Maximum)
 	{
 		//step 6: generate new pattern and update solution... 
@@ -1774,17 +1768,16 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//std::cout << target << std::endl;
 
 		//return new beta. stop . saya baru bisa melapirkan
-		writeF << begin<<";"<< target << "\n";
+		//writeF << begin<<";"<< target << "\n";
 
 		//std::cout <<x_target << "\t";
-		//printf("%.6f\n", target);  
+		printf("%.6f\n", target);  
 		++begin;
 	}
-	//std::cout<<x_target<<std::endl;
-	writeF <<x_target << std::endl;
-	writeF.close(); 
+	std::cout<<x_target<<std::endl;
+	//writeF <<x_target << std::endl;
+	//writeF.close(); 
 }
 double fx(Eigen::Matrix<double, 1, 2>x) {
 	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
-	//return (std::pow(x(0, 0), 2.0) * x(0, 1));
 }
