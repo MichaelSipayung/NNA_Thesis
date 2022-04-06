@@ -10,13 +10,13 @@
 #include <vector>
 #include <chrono>
 #include <stdio.h>
-#define KODE 32
-#define FKODE 32
-#define maxSamp  1500//case monte carlo
+#include <complex>
+#define KODE 41
+#define FKODE 41
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
-std::random_device rd; //nondeterminioctic random distribution
+std::random_device rd; //nondeterministic random distribution
 std::default_random_engine eng(rd());
 std::uniform_real_distribution<float> distr(FLOAT_MIN, FLOAT_MAX);
 //std::uniform_real_distribution<double> boundMonteA(0,M_PI/2.0), boundMonteB(0,1.0);
@@ -53,7 +53,7 @@ std::uniform_real_distribution<double>CS29_32(cs29_32[0], cs29_32[1]), DS29_32(c
 
 Eigen::Matrix <double, 1, 2> value_index1, value_index2;//target value-index
 double fx(Eigen::Matrix<double,1,2> x);
-
+std::complex<double> comRoot(std::complex<double>x, std::complex<double> y);
 int main()
 {
 	Eigen::Matrix<double, NPOP, 1>  cost;
@@ -70,7 +70,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 1 ;i++)
+	for (size_t i = 0; i < 0 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -79,6 +79,11 @@ int main()
 		NNA::setTarget(x_target, x_pattern, value_index, w_target, w);
 		NNA::Run(x_new, x_pattern, w_target, w, cost, x_target);
 	}
+	std::complex<double> xC(1.43098,-5.08152e-05);
+	std::complex<double> yC(0.819816,6.53159e-05);
+	std::cout<<"real part\t: "<<xC.real() <<"imag part \t: "<<xC.imag();
+	std::cout<<"\nbest real part\t: " << comRoot(xC,yC).real() <<" imag part \t: " <<comRoot(xC,yC).imag()<<std::endl;
+	//std::cout<<comRoot()
 	std::cout << "Finish ....." << std::endl;
 	double temp=0.0, c[10]={0.0};
 	Eigen::Matrix<double, 1, nvars> x;
@@ -101,6 +106,20 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	//note max transform by pre mul-multiplying the objective function by -1
 	switch (FKODE)
 	{
+		//noninear complex root
+	case 41:
+		temp=0.0;
+		c[0]=std::pow(x(0,0),2.0)-std::pow(x(0,1),2.0)+std::pow(x(0,2),2.0)-std::pow(x(0,3),2.0)
+		+x(0,0)+x(0,2)-8.0;
+		c[1]=2.0*x(0,0)*x(0,1)+2.0*x(0,2)*x(0,3)+x(0,1)+x(0,3);
+		c[2]=x(0,0)*x(0,2)+x(0,0)+x(0,2)-x(0,1)*x(0,3)-5.0;
+		c[3]=x(0,0)*x(0,3)+x(0,2)*x(0,1)+x(0,1)+x(0,3);
+		for (size_t i = 0; i < 4; i++)
+		{
+			temp+=std::fabs(c[i]);
+		}
+		return (temp);
+		break;
 	case 78:
 		temp = 0.0;
 		c[0] = 0.0006 * std::pow(x(0, 0), 2.0) + 0.5 * x(0, 0) + 6.0;
@@ -1046,7 +1065,7 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 2000;
+	int Maximum = 500;
 	int begin = 1;
 	int auxilaryVar = 0;
 	//writeF.open("rosenBrock.csv", std::ios::app);
@@ -1780,4 +1799,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 }
 double fx(Eigen::Matrix<double, 1, 2>x) {
 	return (std::cos(x(0, 0)) * std::exp(x(0, 1)));
+}
+std::complex<double> comRoot(std::complex<double>x, std::complex<double> y){
+	return (std::pow(x,4.0)+4.0*std::pow(y,4.0)-6.0);
 }
