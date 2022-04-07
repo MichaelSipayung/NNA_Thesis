@@ -11,8 +11,8 @@
 #include <chrono>
 #include <stdio.h>
 #include <complex>
-#define KODE 41
-#define FKODE 41
+#define KODE 28
+#define FKODE 28
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
@@ -70,7 +70,7 @@ int main()
 		bF[i] = bF[0] + (i * 10.0);
 	}
 	//call NNA
-	for (size_t i = 0; i < 0 ;i++)
+	for (size_t i = 0; i < 1 ;i++)
 	{
 		NNA::initialization(ww, w, x_pattern, cost);
 		NNA::CreateInitialPopulation(x_pattern, cost, value_index);
@@ -515,198 +515,6 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (sum + temp);
 		break;
-	
-	/*case 0:
-		//griewank function 
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp += (std::pow(x(0, i), 2.0) / 4000.0);
-		}
-		for (size_t i = 1; i < nvars + 1; i++)
-		{
-			p *= std::cos(x(0, i - 1) / std::sqrt(i));
-		}
-		return (1.0 + temp - p);
-		break;
-	case 1:
-		//sphere
-		temp = 0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp += std::pow(x(0, i), 2.0);
-		}
-		return temp;
-		break;
-	case 2:
-		//cube  function 
-		temp = 0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp += -std::pow(x(0, i), 3.0);
-		}
-		return temp;
-		break;
-	case 3:
-		//Michalewicz function 
-		temp = 0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp += std::sin(x(0, i)) * std::pow((std::sin(i + 1 * std::pow(x(0, i), 2.0) / M_PI)), 2.0 * 10.0);
-		}
-		return -temp;
-		break;
-	case 4:
-		//sum square
-		temp = 0.0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp = temp + (i + 1) * std::pow(x(0, i), 2.0);
-		}
-		return temp;
-		break;
-	case 5:
-		//rosenbrock function
-		temp = 0.0;
-		for (size_t i = 1; i < nvars; i++)
-		{
-			temp = temp + 100.0 * (std::pow(x(0, i) - std::pow(x(0, i - 1), 2.0), 2.0)) + std::pow(1.0 - x(0, i - 1), 2.0);
-		}
-		return temp;
-		break;
-	case 6:
-		//rastrign function
-		temp = 0.0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp = temp + (std::pow(x(0, i), 2.0) - 10.0 * std::cos(2.0 * M_PI * x(0, i)));
-		}
-		return 10.0 * nvars + temp;
-		break;
-	case 7:
-		//hump function
-		temp = 1.0316285 + 4 * std::pow(x(0, 0), 2.0) -
-			2.1 * std::pow(x(0, 0), 4.0) + std::pow(x(0, 0), 6.0) / 3 + x(0, 0) * x(0, 1) 
-			- 4 * std::pow(x(0, 1), 2.0) + 4 * std::pow(x(0, 1), 4.0);
-		return temp;
-		break;
-	case 8:
-		//SCHWEFEL function
-		temp = 0.0;
-		for (size_t i = 0; i < nvars; i++)
-		{
-			temp += x(0, i) * std::sin(std::sqrt(std::fabs(x(0, i))));
-		}
-		return (418.9829 * nvars - temp);
-		break;
-		//constrained optimization 
-	case 9:
-		//page 414. stewart calculus : 1.86903e-06 -1.86778e-06
-		temp = std::pow(x(0, 0), 2.0) + 2.0 * std::pow(x(0, 1), 2.0);
-		sumConstrains = std::pow(x(0, 0), 2.0) + std::pow(x(0, 1), 2.0) - 1.0;
-		return (temp + PENALTY * std::pow(std::max(sumConstrains, 0.0), 2.0));
-		break;
-	case 10:
-		//page 417. stewart calculus, question no 19 : 0.707822 0.353192
-		temp = std::exp(-x(0, 0) * x(0, 1));
-		sumConstrains = std::pow(x(0, 0), 2.0) + 4.0 * std::pow(x(0, 1), 2.0) - 1.0;
-		return (temp + PENALTY * std::pow(std::max(sumConstrains, 0.0), 2.0));
-		break;
-	case 11:
-		//simple square case : 1.95418 0.0885032, page 425
-		temp = (1 / 2.0) * std::pow(x(0, 0) - 2.0, 2.0) + (1 / 2.0) * std::pow(x(0, 1) - 1 / 2.0, 2.0);
-		sumConstrains = -std::pow(x(0, 0) + 1.0, -1.0) + x(0, 1) + (1 / 4.0);
-		return (temp + PENALTY * std::pow(std::max(sumConstrains, 0.0), 2.0));
-		break;
-	case 12:
-		//page 475, jorge nocedal  : 1.38838 1.69419
-		temp = std::pow(x(0, 0) - 1.0, 2.0) + std::pow(x(0, 1) - 2.5, 2.0);
-		c[0] = -x(0, 0) + 2.0 * x(0, 1) - 2.0;
-		c[1] = x(0, 0) + 2.0 * x(0, 1) - 6.0;
-		c[2] = x(0, 0) - 2.0 * x(0, 1) - 2.0;
-		c[3] = 0.0;
-		for (size_t i = 0; i < 3; i++)
-		{
-			c[3] += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return (temp + c[3]);
-		break;
-	case 13:
-		// jorge nocedal page 322 : 0.999732 0.000265118, 
-		temp = std::pow(x(0, 0) - 3 / 2.0, 2.0) + std::pow(x(0, 1) - 1 / 2.0, 4.0);
-		c[0] = -1.0 + x(0, 0) + x(0, 1);
-		c[1] = -1.0 + x(0, 0) - x(0, 1);
-		c[2] = -1.0 - x(0, 0) + x(0, 1);
-		c[3] = -1.0 - x(0, 0) - x(0, 1);
-		c[4] = 0.0;
-		for (size_t i = 0; i < 5; i++)
-		{
-			c[4] += PENALTY * std::pow(std::max(c[i], 0.0), 2.0);
-		}
-		return (temp + c[4]);
-		break;
-	case 14:
-		//simple square case : 1.95418 0.0885032, page 425
-		temp = (2.0 * std::sqrt(2.0)*x(0,0) + x(0, 1)) * 100.0;
-		c[0]=(std::sqrt(2.0) * x(0, 0) + x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1)) * 2.0 - 2.0;
-		c[1] = (x(0, 1)) / (std::sqrt(2.0) * std::pow(x(0, 0), 2.0) + 2.0 * x(0, 0) * x(0, 1)) * 2.0 - 2.0;
-		c[2] = (1.0) / (x(0, 0) + std::sqrt(2.0)* x(0, 1)) * 2.0 - 2.0;
-		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) 
-			+ PENALTY * std::pow(std::max(c[2], 0.0), 2.0));
-		break;
-	case 15://max paper zahara  
-		temp = -std::pow(std::sin(2.0 * M_PI * x(0, 0)), 3.0) * 
-			std::sin(2.0 * M_PI * x(0, 1))/ -(std::pow(x(0,0),3.0) * (x(0,0)+x(0,1)));
-		c[0] = std::pow(x(0, 0), 2.0) - x(0, 1) + 1.0;
-		c[1] = 1.0 - x(0, 0) + std::pow(x(0, 1) - 4.0, 2.0);
-		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
-		break;
-	case 16:
-		return (-x(0, 0) - x(0, 1));
-		break;
-		//nonlinear integer programming 
-	case 17:
-		return  std::pow(x(0, 0), 4.0) + std::pow(x(0, 1), 4.0) + 
-			16.0 * (x(0, 0) * x(0, 1) + std::pow(4.0 + x(0, 1), 2.0));
-		break;
-	case 18: 
-		temp= 10.0 / x(0, 0) + 10.0 / x(0, 1) + 20.0 / x(0, 2) + 30.0 / x(0, 3);
-		c[0] = x(0, 0) + x(0, 1) + x(0, 2) + x(0, 3) - 10.0;
-		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0));
-		break;
-		//mixed nollinear integer programming 
-	case 19:
-		temp = -0.7 * x(0, 2) + 5.0 * std::pow((x(0, 0) - 0.5), 2.0) + 0.8;
-		c[0] = -std::exp(x(0, 0) - 0.2) - x(0, 1);
-		c[1] = x(0, 1) + 1.1*x(0, 2) - 1.0;
-		c[2] = x(0, 0) - 1.2 * x(0, 2) - 0.2;
-		c[3] = 0.2 - x(0, 0);
-		c[4] = x(0, 0) - 1.0;
-		c[5] = -2.2554 - x(0, 1);
-		c[6] = x(0, 1) + 1.0;
-		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0) 
-			+ PENALTY * std::pow(std::max(c[2], 0.0), 2.0) + PENALTY * std::pow(std::max(c[3], 0.0), 2.0)
-			+ PENALTY * std::pow(std::max(c[4], 0.0), 2.0) + PENALTY * std::pow(std::max(c[5], 0.0), 2.0)
-			+ PENALTY * std::pow(std::max(c[6], 0.0), 2.0));
-		break;
-	case 20:
-		temp = -17 * x(0, 0) - 12.0 * x(0, 1);
-		c[0] = 10 * x(0, 0) + 7.0 * x(0, 1) - 40.0;
-		c[1] = x(0, 0) + x(0, 1) - 5.0;
-		return (temp + PENALTY * std::pow(std::max(c[0], 0.0), 2.0) + PENALTY * std::pow(std::max(c[1], 0.0), 2.0));
-		break;
-		//enginering problem 
-	
-	//multiobjective optimization 
-	case 35:
-		c[0] = std::pow(x(0, 0),2.0);
-		c[1] = std::pow(x(0, 0) - 2.0, 2.0);
-		for (size_t i = 0; i < 2; i++)
-		{
-			sum += 0.5 * c[i];
-		}
-		return sum;
-		break;
-		*/
 	case 25: //schewefel function version 2 
 		temp = 0;
 		for (size_t i = 0; i < nvars; i++)
@@ -737,7 +545,7 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		c[3] = -std::exp(c[1] / nvars);
 		return (c[2] + c[3] + 20 + std::exp(1.0));
 		break;
-	case 28:
+	case 28://griewank
 		c[0] = 0, c[1] = 1.0;
 		for (size_t i = 0; i < nvars; i++)
 		{
@@ -1065,7 +873,7 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 500;
+	int Maximum = 1700;
 	int begin = 1;
 	int auxilaryVar = 0;
 	//writeF.open("rosenBrock.csv", std::ios::app);
@@ -1790,10 +1598,10 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		//writeF << begin<<";"<< target << "\n";
 
 		//std::cout <<x_target << "\t";
-		printf("%.6f\n", target);  
+		printf("%.5f\n", target);  
 		++begin;
 	}
-	std::cout<<x_target<<std::endl;
+	//std::cout<<x_target<<std::endl;
 	//writeF <<x_target << std::endl;
 	//writeF.close(); 
 }
