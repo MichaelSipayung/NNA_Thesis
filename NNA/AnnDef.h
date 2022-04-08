@@ -5,9 +5,9 @@
 #include <random> 
 #include <algorithm>
 #include "AnnImp.cpp"
-#define NPOP 150
+#define NPOP 110
 #define MAX  300
-#define nvars 4
+#define nvars 100
 
 double tension[6] = {0.05,2.0,0.25,1.3,2.0,15.0};
 double pressureVes[8] = { 0.0,99.0,0.0,99.0,10.00,200.0,10.0,200.0 };
@@ -23,7 +23,7 @@ double LoMulD[5] = { 60.0,90.0,1.5,600.0,2.0 };
 double UpMulD[5] = { 80.0,110.0,3.0,1000.0,9.0 };
 double bT[4] = { 1.5,2.0,2.5,3.0 }; //constrains for multiple disk clutch brake design 
 double bF[41] = { 600.0 }; 
-double def[2] = {-10.0,10.0 };
+double def[2] = {-5.12,5.12 };
 //Defenition for problem 12,13,17,18,19,20,22,23,24
 /* -10<x<10	
 	0<x<6	

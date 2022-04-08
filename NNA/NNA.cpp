@@ -11,8 +11,8 @@
 #include <chrono>
 #include <stdio.h>
 #include <complex>
-#define KODE 28
-#define FKODE 28
+#define KODE 35
+#define FKODE 35
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
@@ -555,11 +555,73 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		}
 		return (c[0] - c[1] + 1.0);
 		break;
-	case 32:
+	case 32://rosenbrock
 		temp=0.0;
 		for (size_t i = 1; i < nvars; i++)
 		{
 			temp+=100.0*(std::pow(x(0,i)-std::pow(x(0,i-1),2.0),2.0))+std::pow(x(0,i-1),2.0);
+		}
+		return (temp);
+		break;
+	case 33://2nd minima 
+		temp =0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::pow(x(0,i),4.0)-16.0*std::pow(x(0,i),2.0)+5.0*x(0,i);
+		}
+		return (temp);
+		break;
+	case 34://schwefel verse 2 (-5,5)
+		temp=0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			for (size_t j = 0; j < nvars; j++)
+			{
+				temp+=std::pow(x(0,j),2.0);
+			}
+		}
+		return (temp);
+		break; 
+	case 35://sphere (-5.12,5.12)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::pow(x(0,i),2.0);
+		}
+		return (temp);
+		break;
+	case 36://chung reynalds (-100,100)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::pow(x(0,i),2.0);
+		}
+		return (std::pow(temp,2.0));
+		break;		
+	case 37://schwefel 2.23 (-10,10)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::pow(x(0,i),10.0);
+		}
+		return (temp);
+		break;
+	case 38://sum squares (-10,10)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=(i+1)*std::pow(x(0,i),2.0);
+		}
+		return (temp);
+		break;
+	case 39://alpine (-100,100)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+= std::fabs(x(0,i)*std::sin(x(0,i)) +0.1*x(0,i));
+		}
+		
+		return (temp);
+		break;
+	case 40: //powel sum (-1,1)
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::pow( std::fabs(x(0,i)),2+i);
 		}
 		return (temp);
 		break;
@@ -873,7 +935,7 @@ void NNA::setTarget(Eigen::Matrix<double, 1, nvars>& x_target, Eigen::Matrix<dou
 void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, NPOP, nvars>& x_pattern, Eigen::Matrix<double, NPOP, 1>& w_target,
 	Eigen::MatrixXd& w, Eigen::Matrix<double, NPOP, 1>& cost, Eigen::Matrix<double, 1, nvars>& x_target) {
 	std::ofstream writeF;
-	int Maximum = 1700;
+	int Maximum = 1000;
 	int begin = 1;
 	int auxilaryVar = 0;
 	//writeF.open("rosenBrock.csv", std::ios::app);
@@ -1601,7 +1663,7 @@ void NNA::Run(Eigen::Matrix<double, NPOP, nvars>& x_new, Eigen::Matrix<double, N
 		printf("%.5f\n", target);  
 		++begin;
 	}
-	//std::cout<<x_target<<std::endl;
+	std::cout<<x_target<<std::endl;
 	//writeF <<x_target << std::endl;
 	//writeF.close(); 
 }
