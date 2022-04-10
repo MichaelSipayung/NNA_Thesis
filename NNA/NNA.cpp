@@ -11,8 +11,8 @@
 #include <chrono>
 #include <stdio.h>
 #include <complex>
-#define KODE 35
-#define FKODE 35
+#define KODE 41
+#define FKODE 41
 int n_rotate = 0, n_wrotate = 0;
 double target = 0.0, beta = 1.0;
 constexpr int FLOAT_MIN = 0, FLOAT_MAX=1;
@@ -107,19 +107,19 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 	switch (FKODE)
 	{
 		//noninear complex root
-	case 41:
-		temp=0.0;
-		c[0]=std::pow(x(0,0),2.0)-std::pow(x(0,1),2.0)+std::pow(x(0,2),2.0)-std::pow(x(0,3),2.0)
-		+x(0,0)+x(0,2)-8.0;
-		c[1]=2.0*x(0,0)*x(0,1)+2.0*x(0,2)*x(0,3)+x(0,1)+x(0,3);
-		c[2]=x(0,0)*x(0,2)+x(0,0)+x(0,2)-x(0,1)*x(0,3)-5.0;
-		c[3]=x(0,0)*x(0,3)+x(0,2)*x(0,1)+x(0,1)+x(0,3);
-		for (size_t i = 0; i < 4; i++)
-		{
-			temp+=std::fabs(c[i]);
-		}
-		return (temp);
-		break;
+	// case 41:
+	// 	temp=0.0;
+	// 	c[0]=std::pow(x(0,0),2.0)-std::pow(x(0,1),2.0)+std::pow(x(0,2),2.0)-std::pow(x(0,3),2.0)
+	// 	+x(0,0)+x(0,2)-8.0;
+	// 	c[1]=2.0*x(0,0)*x(0,1)+2.0*x(0,2)*x(0,3)+x(0,1)+x(0,3);
+	// 	c[2]=x(0,0)*x(0,2)+x(0,0)+x(0,2)-x(0,1)*x(0,3)-5.0;
+	// 	c[3]=x(0,0)*x(0,3)+x(0,2)*x(0,1)+x(0,1)+x(0,3);
+	// 	for (size_t i = 0; i < 4; i++)
+	// 	{
+	// 		temp+=std::fabs(c[i]);
+	// 	}
+	// 	return (temp);
+	// 	break;
 	case 78:
 		temp = 0.0;
 		c[0] = 0.0006 * std::pow(x(0, 0), 2.0) + 0.5 * x(0, 0) + 6.0;
@@ -622,6 +622,14 @@ double NNA::f(Eigen::Matrix<double, 1, nvars> x) {
 		for (size_t i = 0; i < nvars; i++)
 		{
 			temp+=std::pow( std::fabs(x(0,i)),2+i);
+		}
+		return (temp);
+		break;
+	case 41:
+		temp=0.0;
+		for (size_t i = 0; i < nvars; i++)
+		{
+			temp+=std::fabs(x(0,i));
 		}
 		return (temp);
 		break;
