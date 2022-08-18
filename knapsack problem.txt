@@ -1,0 +1,10 @@
+1 0 0 0 1 1 0 1 1 0 1 0  optimal: 5.68889e+06
+npop : 65  max = 5000, n_item = 12 
+
+
+0 0 1 0 1 
+1 1 1 0 1 
+1 1 0 0 0 
+0 1 1 0 0  optimal: 1.07176e+07
+total waktu komputasi 157.027557 detik.
+npop : 50, max = 10000

@@ -1,0 +1,3 @@
+/home/michael/Documents/NNA/CMakeFiles/rebuild_cache.dir
+/home/michael/Documents/NNA/CMakeFiles/NNA.dir
+/home/michael/Documents/NNA/CMakeFiles/edit_cache.dir
