@@ -89,7 +89,7 @@ int main()
 	c[0] = x(0,2) / x(0,1);// C
 	c[1]  = ((4.0*c[0]-1.0) / (4.0*c[0]-4.0) ) + (0.615/c[0]); //Ks
 	temp = ( (8.0*c[1]*1000.0*x(0,2)) )/ (M_PI*std::pow(x(0,1),3.0)) - (189000.0 ) ;
-	std::cout<<"hasil : " << temp <<std::endl;
+	std::cout<<"hasil Cons1: " << temp <<std::endl;
 
 	return 0;
 }
